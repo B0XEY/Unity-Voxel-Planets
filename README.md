@@ -37,9 +37,15 @@ Version 2 generation (recommended)
 - Chunk System
 - Faster Generation
 - Faster Smooth terrain Generation
+- Times (256 x 256 Noise Map)
+- - Noise Generation - 3.18 Seconds
+- - Chunk Generation - 1.83 Seconds 
         
 - Version 1 generation
 - 2 Parts
 - Fast Mesh Generation at Small Values
 - Custom Look of the planet (Flat shading, Smoothing)
 - Custom scale of the planet
+- - Times (256 x 256 Noise Map)
+- - Noise Generation - 3.18 Seconds
+- - Chunk Generation - 1.83 Seconds 
