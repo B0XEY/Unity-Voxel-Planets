@@ -5,6 +5,7 @@ Make Procedural Unity Voxel Planets with smooth terrain and a dynamic texture vi
 
 !Odin Inspector recommended! (Only Version RN)
 https://odininspector.com/download
+or https://assetstore.unity.com/packages/tools/utilities/naughtyattributes-129996
      
 Features
 - 3D noise function uses jobs / brust in runtime for faster performance. Inspector (not playing) uses normal functions
