@@ -3,7 +3,7 @@
 
 Make Procedural Unity Voxel Planets with smooth terrain and a dynamic texture via a Shader graph.
 
-!Odin Inspector recommended! (Only Version RN)
+!Odin Inspector recommended! (More Recent Versions)
 https://odininspector.com/download
 or https://assetstore.unity.com/packages/tools/utilities/naughtyattributes-129996
      
@@ -22,7 +22,6 @@ To-DO (First to Last)
 - Mesh Colliders Support
 - Fix Mesh Seams      
 - Lower Memory usage
-- No Odin Support
 - Better Shaders
 - Walk around Planets
 - Terraforming
