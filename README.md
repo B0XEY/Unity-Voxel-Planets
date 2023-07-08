@@ -20,8 +20,7 @@ Features
                   
 To-DO (First to Last)
 - Mesh Colliders Support
-- Fix Mesh Seams!
-           
+- Fix Mesh Seams      
 - Lower Memory usage
 - No Odin Support
 - Better Shaders
@@ -35,17 +34,20 @@ To-DO (First to Last)
 Version 2 generation (recommended)
 - One Script (Place and Generate)
 - Chunk System
-- Faster Generation
+- Faster Generation (All Values(To a Point))
+- Custom Look of the planet (Flat shading, Smoothing)
 - Faster Smooth terrain Generation
-- Times (256 x 256 Noise Map)
+- Times (256 x 256 Noise Map, No Jobs/Burst, In Editor, Not Playing)
 - - Noise Generation - 3.18 Seconds
-- - Chunk Generation - 1.83 Seconds 
+- - Chunk Generation - 1.83 Seconds (Smooth Shading)
+- - Chunk Generation - .69 Seconds (Flat Shading)
         
 - Version 1 generation
 - 2 Parts
 - Fast Mesh Generation at Small Values
 - Custom Look of the planet (Flat shading, Smoothing)
 - Custom scale of the planet
-- - Times (256 x 256 Noise Map)
-- - Noise Generation - 3.18 Seconds
-- - Chunk Generation - 1.83 Seconds 
+- - Times (256 x 256 Noise Map, No Jobs/Burst, In Editor, Not Playing)
+- - Noise Generation - 12.07 Seconds
+- - Mesh Generation - 2.11 Seconds (Flat Shading)
+- - Mesh Generation - 27.91 Minutes (Smooth Shading) XXXXXXXXXX
