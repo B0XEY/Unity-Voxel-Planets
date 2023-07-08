@@ -1,6 +1,6 @@
 # Unity-Voxel-Planets
-[Screenshot 2023-07-07 215833](https://github.com/B0XEY/Unity-Voxel-Planets/assets/94720404/45c72532-93f0-4ceb-bfa1-bebe1452afe6)
-     
+![ezgif com-optimize](https://github.com/B0XEY/Unity-Voxel-Planets/assets/94720404/764d639a-c221-4c43-85b4-63d31b6a2f7c)
+
 Make Procedural Unity Voxel Planets with smooth terrain and a dynamic texture via a Shader graph.
 
 !Odin Inspector recommended! (Only Version RN)
