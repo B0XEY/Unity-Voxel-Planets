@@ -38,8 +38,8 @@ Version 2 Generation (recommended)
 - Faster Smooth terrain Generation
 - Times (256 x 256 Noise Map, No Jobs/Burst, In Editor, Not Playing)
 - - Noise Generation - 22.93 Seconds
-- - Chunk Generation - 8.3 Seconds (Smooth Shading, Total)
 - - Chunk Generation - 2.3 Seconds (Flat Shading, Total)
+- - Chunk Generation - 8.3 Seconds (Smooth Shading, Total)
 
 Version 1 Generation
 - 2 Parts
