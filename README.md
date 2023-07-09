@@ -18,11 +18,11 @@ Features
 - Simple Tools to View Data (Rotate, Bounds Viewer/center, Camera Position, Mesh Info)
 - Events when Generation Planets (Runtime Only)
                   
-To-DO (First to Last)
+To-DO
 - Mesh Colliders Support :(
 - Fix Mesh Seams :(
 - Lower Memory usage :|
-- Better Shaders :(
+- Better Shaders :|
 - Walk around Planets :(
 - Terraforming :(
 - Auto Sand / Water Creation for entire procedural terrain :(
