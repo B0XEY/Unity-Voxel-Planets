@@ -30,7 +30,7 @@ TO-DO
 - Atmosphere (very hard for me) :(
          
          
-Version 2 generation (recommended)
+Version 2 Generation (recommended)
 - One Script (Place and Generate)
 - Chunk System
 - Faster Generation (All Values(To a Point))
@@ -40,8 +40,8 @@ Version 2 generation (recommended)
 - - Noise Generation - 2.99 Seconds
 - - Chunk Generation - 1.83 Seconds (Smooth Shading)
 - - Chunk Generation - .79 Seconds (Flat Shading)
-        
-- Version 1 generation
+
+Version 1 Generation
 - 2 Parts
 - Fast Mesh Generation at Small Values
 - Custom Look of the planet (Flat shading, Smoothing)
