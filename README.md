@@ -37,9 +37,9 @@ Version 2 Generation (recommended)
 - Custom Look of the planet (Flat shading, Smoothing)
 - Faster Smooth terrain Generation
 - Times (256 x 256 Noise Map, No Jobs/Burst, In Editor, Not Playing)
-- - Noise Generation - 2.99 Seconds
-- - Chunk Generation - 1.83 Seconds (Smooth Shading)
-- - Chunk Generation - .79 Seconds (Flat Shading)
+- - Noise Generation - 23.01 Seconds
+- - Chunk Generation - 8.3 Seconds (Smooth Shading, Total)
+- - Chunk Generation - .79 Seconds (Flat Shading, Total)
 
 Version 1 Generation
 - 2 Parts
@@ -48,5 +48,5 @@ Version 1 Generation
 - Custom scale of the planet
 - - Times (256 x 256 Noise Map, No Jobs/Burst, In Editor, Not Playing)
 - - Noise Generation - 12.07 Seconds
-- - Mesh Generation - 2.11 Seconds (Flat Shading)
-- - Mesh Generation - 27.91 Minutes (Smooth Shading)
+- - Mesh Generation - 2.11 Seconds (Flat Shading, Total)
+- - Mesh Generation - 27.91 Minutes (Smooth Shading, Total)
