@@ -41,7 +41,7 @@ Version 2 Generation (recommended)
 - - Chunk Generation - 2.3 Seconds (Flat Shading, Total)
 - - Chunk Generation - 8.3 Seconds (Smooth Shading, Total)
 
-Version 1 Generation
+Version 1 Generation (Obsolete)
 - 2 Parts
 - Fast Mesh Generation at Small Values
 - Custom Look of the planet (Flat shading, Smoothing)
