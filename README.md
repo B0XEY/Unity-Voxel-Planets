@@ -5,7 +5,7 @@
 ### https://github.com/unbeGames/noise.git (Required)
 ### [Odin Inspector recommended](https://odininspector.com/download) (More Recent Versions, Link to free trial)
 ### or [Naughty Attributes](https://assetstore.unity.com/packages/tools/utilities/naughtyattributes-129996)
-     
+```  
 Features
 - 3D noise function uses jobs / brust in runtime for faster performance. Inspector (not playing) uses normal functions
 - Noise settings controlled with Scriptable Object
@@ -16,6 +16,7 @@ Features
 - Full Debug of time taken to generate
 - Simple Tools to View Data (Rotate, Bounds Viewer/center, Camera Position, Mesh Info)
 - Events when Generation Planets (Runtime Only)
+```
                   
 TO-DO
 - [ ] Fix Mesh Seams
@@ -27,7 +28,7 @@ TO-DO
 - [ ] Use GPU to draw Meshes
 - [ ] Atmosphere (very hard for me)
          
-```  
+
 Version 2 Generation (recommended)
 - One Script (Place and Generate)
 - Chunk System
@@ -38,8 +39,7 @@ Version 2 Generation (recommended)
 - - Noise Generation - 22.93 Seconds
 - - Chunk Generation - 2.3 Seconds (Flat Shading, Total)
 - - Chunk Generation - 8.3 Seconds (Smooth Shading, Total)
-```
-```
+
 Version 1 Generation (Obsolete)
 - 2 Parts
 - Fast Mesh Generation at Small Values
@@ -49,4 +49,4 @@ Version 1 Generation (Obsolete)
 - - Noise Generation - 12.07 Seconds
 - - Mesh Generation - 2.11 Seconds (Flat Shading, Total)
 - - Mesh Generation - 27.91 Minutes (Smooth Shading, Total)
-```
+
