@@ -6,7 +6,7 @@ Make Procedural Unity Voxel Planets with smooth terrain and a dynamic texture vi
 https://github.com/unbeGames/noise.git NEEDED
 
 [!Odin Inspector recommended!](https://odininspector.com/download) (More Recent Versions)
-or [Naughty Attributes](https://assetstore.unity.com/packages/tools/utilities/naughtyattributes-129996)
+or Naughty [Attributes]([url](https://assetstore.unity.com/packages/tools/utilities/naughtyattributes-129996))
      
 Features
 - 3D noise function uses jobs / brust in runtime for faster performance. Inspector (not playing) uses normal functions
