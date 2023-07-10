@@ -20,14 +20,14 @@ Features
 - Events when Generation Planets (Runtime Only)
                   
 TO-DO
-- Fix Mesh Seams :(
-- Lower Memory usage :|
-- Better Shaders :P
-- Walk around Planets :(
-- Terraforming :(
-- Auto Sand / Water Creation for entire procedural terrain :(
-- Use GPU to draw Meshes :(
-- Atmosphere (very hard for me) :(
+[ ] Fix Mesh Seams
+[ ] Lower Memory usage
+[x] Better Shaders
+[ ] Walk around Planets
+[ ] Terraforming
+[ ] Auto Sand / Water Creation for entire procedural terrain
+[ ] Use GPU to draw Meshes
+[ ] Atmosphere (very hard for me)
          
 ```  
 Version 2 Generation (recommended)
