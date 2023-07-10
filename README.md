@@ -29,7 +29,7 @@ TO-DO
 - Use GPU to draw Meshes :(
 - Atmosphere (very hard for me) :(
          
-         
+```  
 Version 2 Generation (recommended)
 - One Script (Place and Generate)
 - Chunk System
@@ -40,7 +40,8 @@ Version 2 Generation (recommended)
 - - Noise Generation - 22.93 Seconds
 - - Chunk Generation - 2.3 Seconds (Flat Shading, Total)
 - - Chunk Generation - 8.3 Seconds (Smooth Shading, Total)
-
+```
+```
 Version 1 Generation (Obsolete)
 - 2 Parts
 - Fast Mesh Generation at Small Values
@@ -50,3 +51,4 @@ Version 1 Generation (Obsolete)
 - - Noise Generation - 12.07 Seconds
 - - Mesh Generation - 2.11 Seconds (Flat Shading, Total)
 - - Mesh Generation - 27.91 Minutes (Smooth Shading, Total)
+```
