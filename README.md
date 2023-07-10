@@ -1,9 +1,9 @@
 # Unity-Voxel-Planets
 ![ezgif com-optimize](https://github.com/B0XEY/Unity-Voxel-Planets/assets/94720404/764d639a-c221-4c43-85b4-63d31b6a2f7c)
 
-Make Procedural Unity Voxel Planets with smooth terrain and a dynamic texture via a Shader graph.
-
-https://github.com/unbeGames/noise.git NEEDED
+## Make Procedural Unity Voxel Planets with smooth terrain and a dynamic texture via a Shader graph
+### Unity 2022.3.1f1 - URP
+### https://github.com/unbeGames/noise.git (Required)
 
 [Odin Inspector recommended](https://odininspector.com/download) (More Recent Versions, Link to free trial)
 or [Naughty Attributes](https://assetstore.unity.com/packages/tools/utilities/naughtyattributes-129996)
