@@ -16,7 +16,7 @@ MonoBehaviour:
   grass: {r: 0.08627451, g: 0.7254902, b: 0.32941177, a: 1}
   grassHighlights: {r: 0.08627451, g: 0.67058825, b: 0.10980392, a: 1}
   sandHighlightsStrength: 0.652
-  sandHeight: 45
+  sandHeight: 49.4
   sand: {r: 1, g: 0.95686275, b: 0.53333336, a: 1}
   sandHighlights: {r: 0.6981132, g: 0.6043068, b: 0.33259168, a: 1}
   rockHighlightsStrength: 0.172

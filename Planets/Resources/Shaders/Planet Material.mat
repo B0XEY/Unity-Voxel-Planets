@@ -84,7 +84,7 @@ Material:
     - _Grass_Warping: 0.6
     - _QueueControl: 0
     - _QueueOffset: 1
-    - _Sand_Height: 45
+    - _Sand_Height: 49.4
     - _Sand_Threshold: -0.46
     - _Sand_Warping: 0.652
     - _Steepness_Threshold: 0.823

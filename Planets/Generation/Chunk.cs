@@ -3,15 +3,15 @@ using System.Linq;
 using Boxey.Planets.Static;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Boxey.Planets.Generation {
     public class Chunk {
-        private Dictionary<Vector3, int> _verticesDictionary;
-        private List<Vector3> _verticesList;
-        private List<int> _triangles;
-        private float[,,] _3dMap;
         public readonly GameObject ChunkObject;
+        
+        private readonly Dictionary<Vector3, int> _verticesDictionary;
+        private readonly List<Vector3> _verticesList;
+        private readonly List<int> _triangles;
+        private float[,,] _3dMap;
 
         private readonly int _size;
         private readonly float _valueGate;
@@ -20,12 +20,16 @@ namespace Boxey.Planets.Generation {
         private readonly bool _doFlatShading;
         private readonly int _viewDistance;
         private readonly int _collideDistance;
+        
         private readonly Material _mat;
         private readonly Transform _object;
         
-        private MeshCollider _chunkCollider;
+        private readonly Mesh _chunkMesh;
+        private readonly MeshFilter _chunkFilter;
+        private readonly MeshRenderer _chunkRenderer;
+        private readonly MeshCollider _chunkCollider;
 
-        public Chunk(float[,,] map, Vector3Int offset, Vector3Int position, int chunkSize, float valueGate, float createGate, bool doSmoothing, bool flatShading, int viewDistance, int colliderDistance, Material mat) {
+        public Chunk(float[,,] map, Vector3Int position, int chunkSize, float valueGate, float createGate, bool doSmoothing, bool flatShading, int viewDistance, int colliderDistance, Material mat) {
             _3dMap = new float[chunkSize + 1, chunkSize + 1, chunkSize + 1];
             _size = chunkSize;
             _valueGate = valueGate;
@@ -55,6 +59,12 @@ namespace Boxey.Planets.Generation {
                 },
                 name = $"{position.x},{position.y},{position.z}"
             };
+            _chunkMesh = new Mesh{
+                name = "Built Mesh"
+            };
+            _chunkFilter = ChunkObject.AddComponent<MeshFilter>();
+            _chunkRenderer = ChunkObject.AddComponent<MeshRenderer>();
+            _chunkCollider = ChunkObject.AddComponent<MeshCollider>();
             Generate();
             SetCollision(false);
             if (Application.isPlaying) SetVisible(false);
@@ -131,14 +141,18 @@ namespace Boxey.Planets.Generation {
         }
 
         #region Chunk Commands
-        public void RegenerateChunk(float radius, float speed, bool remove, float3 center) {
-            Terraform(radius, speed, remove, center);
-            if (_doFlatShading) _verticesList = new List<Vector3>();
-            else _verticesDictionary = new Dictionary<Vector3, int>();
-            _triangles = new List<int>();
+        public float[,,] GetChunkMap() => _3dMap;
+        public void UpdateChunk(float[,,] newMap) {
+            _3dMap = newMap;
             Generate();
         }
+        
         public void Update() {
+            if (_doFlatShading ? _verticesList.Count == 0 : _verticesDictionary.Count == 0) {
+                SetVisible(false);
+                SetCollision(false);
+                return;
+            }
             var distance = Vector3.Distance(ChunkObject.transform.position, _object.position);
             SetVisible(distance <= _viewDistance);
             SetCollision(distance <= _collideDistance);
@@ -151,44 +165,24 @@ namespace Boxey.Planets.Generation {
         }
         #endregion
 
-        #region Terraforming
-        private void Terraform(float radius, float speed, bool remove, float3 center) {
-            var numbers = ChunkObject.name.Split(",");
-            var position = new float3(float.Parse(numbers[0]), float.Parse(numbers[1]), float.Parse(numbers[2]));
-            VoxelNoise.TerraformChunk(ref _3dMap, _size, remove, radius, speed, center, position);
-        }
-        #endregion
-        
         #region Mesh Functions
-
-        public Mesh GetMesh() => ChunkObject.GetComponent<MeshFilter>().sharedMesh;
-        public MeshFilter GetMeshFilter() => ChunkObject.GetComponent<MeshFilter>();
-
-        // ReSharper disable Unity.PerformanceAnalysis
         private void BuildMesh() {
-            var filter = new MeshFilter();
-            if (ChunkObject.TryGetComponent<MeshFilter>(out var f)) filter = f;
-            else filter = ChunkObject.AddComponent<MeshFilter>();
-            var mRenderer = new MeshRenderer();
-            if (ChunkObject.TryGetComponent<MeshRenderer>(out var m)) mRenderer = m;
-            else mRenderer = ChunkObject.AddComponent<MeshRenderer>();
-            
-            if (ChunkObject.TryGetComponent<MeshCollider>(out var mc)) _chunkCollider = mc;
-            else _chunkCollider = ChunkObject.AddComponent<MeshCollider>();
+            _chunkMesh.Clear();
+            if (_doFlatShading ? _verticesList.Count == 0 : _verticesDictionary.Count == 0) {
+                SetVisible(false);
+                SetCollision(false);
+                return;
+            }
+            if (_doFlatShading) _chunkMesh.vertices = _verticesList.Select(vert => new Vector3(vert.x, vert.y, vert.z)).ToArray();
+            else _chunkMesh.vertices = _verticesDictionary.Select(vert => new Vector3(vert.Key.x, vert.Key.y, vert.Key.z)).ToArray();
+            _chunkMesh.triangles = _triangles.ToArray();
+            _chunkMesh.normals = CalculateNormals();
+            _chunkMesh.RecalculateBounds();
+            _chunkMesh.Optimize();
 
-            var worldMesh = new Mesh {
-                name = "Built Mesh"
-            };
-            if (_doFlatShading) worldMesh.vertices = _verticesList.Select(vert => new Vector3(vert.x, vert.y, vert.z)).ToArray();
-            else worldMesh.vertices = _verticesDictionary.Select(vert => new Vector3(vert.Key.x, vert.Key.y, vert.Key.z)).ToArray();
-            worldMesh.triangles = _triangles.ToArray();
-            worldMesh.normals = CalculateNormals();
-            worldMesh.Optimize();
-
-            _chunkCollider.sharedMesh = worldMesh;
-            
-            filter.sharedMesh = worldMesh;
-            mRenderer.sharedMaterial = _mat;
+            _chunkCollider.sharedMesh = _chunkMesh;
+            _chunkFilter.sharedMesh = _chunkMesh;
+            _chunkRenderer.sharedMaterial = _mat;
         }
         private void ClearMeshData() {
             if (_doFlatShading) _verticesList.Clear();
