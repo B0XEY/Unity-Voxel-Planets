@@ -19,11 +19,11 @@ https://github.com/unbeGames/noise.git (Required)
                   
 ## TO-DO
 - [ ] Fix Mesh Seams
-- [ ] Lower Memory usage
+- [x] Lower Memory usage
 - [x] Better Shaders
 - [ ] Walk around Planets
-- [ ] Terraforming
-- [ ] Auto Sand / Water Creation for entire procedural terrain
+- [x] Terraforming
+- [x] Auto Sand / Water Creation for entire procedural terrain
 - [ ] Use GPU to draw Meshes
 - [ ] Atmosphere (very hard for me)
          
