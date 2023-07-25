@@ -1,4 +1,7 @@
 # Unity-Voxel-Planets - Unity 2022.3.1f1 - URP
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/14ba671e9d5f4d04a42528a0166ca049)](https://app.codacy.com/gh/B0XEY/Unity-Voxel-Planets?utm_source=github.com&utm_medium=referral&utm_content=B0XEY/Unity-Voxel-Planets&utm_campaign=Badge_Grade)
+
 ![ezgif com-optimize](https://github.com/B0XEY/Unity-Voxel-Planets/assets/94720404/764d639a-c221-4c43-85b4-63d31b6a2f7c)
 
 ## Make Procedural Unity Voxel Planets with smooth terrain and a dynamic texture via a Shader graph
