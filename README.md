@@ -1,3 +1,4 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/36f9fdfefa0a48efbef1d50f9d63fac0)](https://app.codacy.com/gh/B0XEY/Unity-Voxel-Planets/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 # Unity-Voxel-Planets - Unity 2022.3.1f1 - URP
 ![ezgif com-optimize](https://github.com/B0XEY/Unity-Voxel-Planets/assets/94720404/764d639a-c221-4c43-85b4-63d31b6a2f7c)
 
