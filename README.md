@@ -35,7 +35,6 @@ https://github.com/unbeGames/noise.git (Required)
 - Custom Look of the planet (Flat shading, Smoothing)
 - Faster Smooth terrain Generation
 - Times (256 x 256 Noise Map, No Jobs/Burst, In Editor, Not Playing)
-- -
 - - Noise Generation - 22.93 Seconds
 - - Chunk Generation - 2.3 Seconds (Flat Shading, Total)
 - - Chunk Generation - 8.3 Seconds (Smooth Shading, Total)
