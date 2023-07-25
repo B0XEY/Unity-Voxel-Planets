@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be9650a198534dc791ecd5960155e22d, type: 3}
+  m_Name: Earth
+  m_EditorClassIdentifier: 
+  groundToughness: 1
+  useNoiseMap: 1
+  seed: 748363
+  randomSeed: 1
+  noiseLayers:
+  - type: 0
+    useLastLayerAsMask: 0
+    scale: 0.35
+    layerPower: 1
+    gain: 0.5
+    strength: 1
+    octaves: 3
+    lacunarity: 3.66
+    amplitude: 11.13
+    frequency: 0.804
+    persistence: 0.15
+    offset: {x: 0, y: 0, z: 0}
+  - type: 1
+    useLastLayerAsMask: 0
+    scale: 0.5
+    layerPower: 0.79
+    gain: 1.48
+    strength: 8.12
+    octaves: 2
+    lacunarity: 3.66
+    amplitude: 5.64
+    frequency: 0.804
+    persistence: 0.17
+    offset: {x: 0, y: 0, z: 0}
+  groundHighlightsStrength: 0.6
+  ground: {r: 0.08627451, g: 0.7254902, b: 0.32941177, a: 1}
+  groundHighlight: {r: 0.08627451, g: 0.67058825, b: 0.10980392, a: 1}
+  sandHighlightsStrength: 0.653
+  sandHeight: 49.4
+  sand: {r: 1, g: 0.95686275, b: 0.53333336, a: 1}
+  sandHighlights: {r: 0.81960785, g: 0.70980394, b: 0.4, a: 1}
+  rockHighlightsStrength: 0.172
+  rockThreshold: 0.823
+  rock: {r: 0.41568628, g: 0.3137255, b: 0.25882354, a: 1}
+  rockHighlights: {r: 0.101960786, g: 0.08235294, b: 0.06666667, a: 1}
+  shallowColor: {r: 0.2784314, g: 0.48235294, b: 1, a: 0.5882353}
+  deepColor: {r: 0.039215688, g: 0.45882353, b: 0.9254902, a: 0.92156863}
+  deepFadeDistance: -2.13
+  depthStrength: 0.247
+  foamColor: {r: 1, g: 1, b: 1, a: 1}
+  foamAmount: 0.1
+  foamStrength: 1.645
+  foamCutoff: 1.326
+  foamSpeed: 0.1
