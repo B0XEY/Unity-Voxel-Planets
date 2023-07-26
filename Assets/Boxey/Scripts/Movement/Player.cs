@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Boxey.Scripts.Movement {
+namespace Boxey.Movement {
     public class Player : MonoBehaviour {
         private Rigidbody _rb;
 

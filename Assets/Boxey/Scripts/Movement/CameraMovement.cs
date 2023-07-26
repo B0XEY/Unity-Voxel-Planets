@@ -1,9 +1,9 @@
-using Boxey.Scripts.Planets.Generation;
-using Boxey.Scripts.Planets.Tools;
+using Boxey.Core.Components;
+using Boxey.Core;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Boxey.Scripts.Movement {
+namespace Boxey.Movement {
     public class CameraMovement : MonoBehaviour {
         private float _rotationX;
         private float _rotationY;

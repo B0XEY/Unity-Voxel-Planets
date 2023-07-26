@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Noise Test
   m_EditorClassIdentifier: 
   groundToughness: 0.01
-  useNoiseMap: 0
-  seed: 100451
+  useNoiseMap: 1
+  seed: -819053
   randomSeed: 1
   noiseLayers:
   - type: 0
@@ -28,18 +28,6 @@ MonoBehaviour:
     amplitude: 11.13
     frequency: 0.804
     persistence: 0.15
-    offset: {x: 0, y: 0, z: 0}
-  - type: 1
-    useLastLayerAsMask: 0
-    scale: 0.5
-    layerPower: 0.79
-    gain: 1.48
-    strength: 8.12
-    octaves: 2
-    lacunarity: 3.66
-    amplitude: 5.64
-    frequency: 0.804
-    persistence: 0.17
     offset: {x: 0, y: 0, z: 0}
   groundHighlightsStrength: 0.6
   ground: {r: 0.08627451, g: 0.7254902, b: 0.32941177, a: 1}
