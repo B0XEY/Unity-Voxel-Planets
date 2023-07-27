@@ -285,11 +285,11 @@ namespace Boxey.Core.Static {
                 var position = new float3(x, y, z);
                 var distanceFromPoint =  math.distance(position, EffectCenter);
                 if (distanceFromPoint < EffectRadius && distanceFromPoint > -EffectRadius) {
-                    var weight = Step(EffectRadius, EffectRadius * 0.7f, distanceFromPoint);
+                    var weight = SmoothStep(EffectRadius, EffectRadius * 0.7f, distanceFromPoint);
                     Map1D[index] += -(EffectSpeed * weight * DeltaTime) * Mult;
                 }
             }
-            private static float Step(float min, float max, float time) {
+            private static float SmoothStep(float min, float max, float time) {
                 time = math.saturate((time - min) / (max - min));
                 return time * time * (3 - 2 * time);
             }

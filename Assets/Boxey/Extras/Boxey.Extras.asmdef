@@ -1,0 +1,16 @@
+{
+    "name": "Boxey.Extras",
+    "rootNamespace": "",
+    "references": [
+        "GUID:dad176aacecc2464c9c2390da3627021"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

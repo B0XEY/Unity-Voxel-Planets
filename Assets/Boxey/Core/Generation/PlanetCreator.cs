@@ -42,8 +42,10 @@ namespace Boxey.Core {
         public float viewDistance;
         public bool canCollideWith;
         [Range(0,1f)]public float quality;
+        [Space(10f)]
+        [Range(1,100)] public int cloudLayers;
     }
-
+    [RequireComponent(typeof(CloudController))]
     public class PlanetCreator : MonoBehaviour {
         #region Private Varibles
 
@@ -59,7 +61,7 @@ namespace Boxey.Core {
         private float[,,] _noiseMap;
         private float[,,] _biomeMap;
         private int _max = 2;
-        private int _currentLOD;
+        private int _currentLOD = 0;
         private bool _isCreated;
         private bool _isVisible;
         private Camera _cam;
@@ -133,6 +135,21 @@ namespace Boxey.Core {
             _terraformedChunks = new List<Chunk>();
             _localPositions = new List<Vector3Int>();
             _chunks = new Dictionary<Vector3Int, Chunk>();
+            if (_planetMeshes == null) {
+                _planetMeshes = new Mesh[planetLODS.Length];
+                for (int i = 0; i < _planetMeshes.Length; i++) {
+                    if (_planetMeshes[i] == null) {
+                        _planetMeshes[i] = new Mesh {
+                            name = "Planet Mesh - LOD: " + i + 1,
+                            indexFormat = IndexFormat.UInt32
+                        };
+                    }
+                }
+            }else {
+                foreach (var mesh in _planetMeshes) {
+                    mesh.Clear();
+                }
+            }
             CreateNoiseMaps();
             layer = (int)_max / 2;
             UpdatePreview();
@@ -268,7 +285,9 @@ namespace Boxey.Core {
         [Button("Destroy"), ButtonGroup("Function")]
         private void DestroyWorld() {
             _chunks.Clear();
-            _planetMeshes = null;
+            foreach (var mesh in _planetMeshes) {
+                mesh.Clear();
+            }
             if (_waterObj != null) {
                 if (Application.isPlaying) Destroy(_waterObj);
                 else DestroyImmediate(_waterObj);
@@ -316,6 +335,7 @@ namespace Boxey.Core {
                 }
                 //Update the big mesh
                 UpdateMeshLOD(currentLODIndex);
+                _currentLOD = currentLODIndex;
             }
             else {
                 //Normal Chunk Update
@@ -332,17 +352,14 @@ namespace Boxey.Core {
             _currentLOD = target;
         }
 
+        public LodData GetCurrentLOD() => planetLODS[_currentLOD];
+
         #region LOD Mesh Creation
 
         private void CreatePlanetLODS() {
-            _planetMeshes = new Mesh[planetLODS.Length];
-            for (int i = 0; i < _planetMeshes.Length; i++) {
-                if (_planetMeshes[i] == null) _planetMeshes[i] = new Mesh {
-                    name = "Planet Mesh - LOD: " + i + 1,
-                    indexFormat = IndexFormat.UInt32
-                };
+            foreach (var mesh in _planetMeshes) {
+                mesh.Clear();
             }
-            //combine meshes int one big mesh
             var filters = _chunks.Select(chunk => chunk.Value.GetFilter()).Where(filter => filter != null).ToList();
             _planetMeshes[0].Clear();
             _planetMeshes[0].indexFormat = IndexFormat.UInt32;
@@ -362,7 +379,7 @@ namespace Boxey.Core {
             }
             planetMeshObject.transform.position = Vector3.zero;
             planetMeshObject.GetComponent<MeshRenderer>().material = _planetMat;
-            _planetMeshFilter.sharedMesh = _planetMeshes[0];
+            _planetMeshFilter.sharedMesh = _planetMeshes[_currentLOD];
         }
         private void RebuildLODMesh() {
             //combine meshes int one big mesh
@@ -487,11 +504,16 @@ namespace Boxey.Core {
                     if (i == 0) planetLODS[i].canCollideWith = true;
                     planetLODS[i].quality = 1;
                 }else if (planetLODS[i].quality == 0) {
-                    planetLODS[i].quality = planetLODS[i - 1].quality - 0.1f;
+                    planetLODS[i].quality = Mathf.Clamp(planetLODS[i - 1].quality - 0.1f, 0.001f, 1);
                 }
-                if (i > 0 && planetLODS[i].viewDistance < planetLODS[i - 1].viewDistance) planetLODS[i].viewDistance = planetLODS[i - 1].viewDistance + 50f;
-                
+                if (i > 0 && planetLODS[i].viewDistance < planetLODS[i - 1].viewDistance) {
+                    planetLODS[i].viewDistance = planetLODS[i - 1].viewDistance + 50f;
+                }
+                if (i > 0 && planetLODS[i].cloudLayers > planetLODS[i - 1].cloudLayers) {
+                    planetLODS[i].cloudLayers = Mathf.Clamp(planetLODS[i - 1].cloudLayers - 1, 1, 100);
+                }
             }
+            GetComponent<CloudController>().SendUpdatedData(planetSettings);
         }
     }
 }
