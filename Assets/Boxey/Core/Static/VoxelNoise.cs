@@ -56,7 +56,7 @@ namespace Boxey.Core.Static {
             if (settings.noiseLayers[layerToMake].type == NoiseType.Billow) noiseTypeToUse = 1;
             if (settings.noiseLayers[layerToMake].type == NoiseType.Ridged) noiseTypeToUse = 2;
             var values = new NativeArray<float>((size + 1) * (size + 1) * (size + 1), Allocator.TempJob);
-            var job = new Get3DNoise() {
+            var job = new Get3DNoise {
                 Size = size,
                 Offset = settings.noiseLayers[layerToMake].offset,
                 Scale = (45 * settings.noiseLayers[layerToMake].scale),
@@ -183,7 +183,7 @@ namespace Boxey.Core.Static {
                     }
                 }
             }
-            var job = new Terrafrom() {
+            var job = new Terrafrom {
                 Size = size,
                 Mult = addTerrain ? 1 : -1,
                 EffectRadius = brushRadius,
@@ -220,9 +220,9 @@ namespace Boxey.Core.Static {
             [ReadOnly] public float Persistence;
             [ReadOnly] public int Octaves;
             [ReadOnly] public int UseNoise;
-            [ReadOnly] public Perlin3D Noise; // UseNoise == 0
-            [ReadOnly] public FractalBillow<Value3D> NoiseBillow; // UseNoise == 1
-            [ReadOnly] public FractalRiged<ValueCubic3D> NoiseRigid; // UseNoise == 2;
+            [ReadOnly] public Perlin3D Noise;
+            [ReadOnly] public FractalBillow<Value3D> NoiseBillow;
+            [ReadOnly] public FractalRiged<ValueCubic3D> NoiseRigid;
             public NativeArray<float> MapPlanet1D;
 
             public void Execute(int index) {

@@ -94,7 +94,9 @@ namespace Boxey.Core {
                 cube[i] = SampleMap(position + VoxelTables.CornerTable[i]);
             }
             int configIndex = GetCubeConfig(cube);
-            if (configIndex is 0 or 255) return;
+            if (configIndex is 0 or 255) {
+                return;
+            }
             int edgeIndex = 0;
             for (int i = 0; i < 5; i++) { //Mesh triangles
                 for (int j = 0; j < 3; j++) { // Mesh Points

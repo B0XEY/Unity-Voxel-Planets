@@ -1,5 +1,6 @@
 ﻿using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Boxey.Core {
@@ -53,5 +54,9 @@ namespace Boxey.Core {
         //Clouds
         [Title("Clouds Settings", titleAlignment: TitleAlignments.Centered)]
         [TabGroup("Sky")] public Color cloudColor = Color.white;
+        [TabGroup("Sky")] public float cloudSize = .02f;
+        [TabGroup("Sky")] public float cloudSoftness = .221f;
+        [TabGroup("Sky")] public float cloudiness = .43f;
+        [TabGroup("Sky")] public float cloudSpeed = 1;
     }
 }

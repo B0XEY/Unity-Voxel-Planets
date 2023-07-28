@@ -15,7 +15,7 @@ Shader "Clouds"
 		_SSSStrength("SSS Strength", Float) = 0.22
 		_Center("Center", Vector) = (0,0,0,0)
 		_Radius("Radius", Float) = 0
-		[ASEEnd]_hardness("hardness", Float) = 0
+		[ASEEnd]_hardness("hardness", Float) = 2
 
 
 		//_TransmissionShadow( "Transmission Shadow", Range( 0, 1 ) ) = 0.5
@@ -198,8 +198,8 @@ Shader "Clouds"
 			#pragma shader_feature_local_fragment _SPECULAR_SETUP
 			#define _SURFACE_TYPE_TRANSPARENT 1
 			#define ASE_DEPTH_WRITE_ON
+			#define ASE_EARLY_Z_DEPTH_OPTIMIZE
 			#define _EMISSION
-			#define _ALPHATEST_ON 1
 			#define ASE_SRP_VERSION 140008
 
 
@@ -300,10 +300,10 @@ Shader "Clouds"
 			float3 _Center;
 			float _SSSStrength;
 			float _SSSPower;
-			float _CloudSpeed1;
-			float _CloudSize1;
 			float _Radius;
 			float _hardness;
+			float _CloudSpeed1;
+			float _CloudSize1;
 			float _CloudCutoff;
 			float _CloudSoftness;
 			#ifdef ASE_TRANSMISSION
@@ -604,6 +604,8 @@ Shader "Clouds"
 				WorldViewDirection = SafeNormalize( WorldViewDirection );
 
 				float dotResult35 = dot( WorldViewDirection , -_MainLightPosition.xyz );
+				float3 temp_output_5_0_g2 = ( ( WorldPosition - _Center ) / _Radius );
+				float dotResult8_g2 = dot( temp_output_5_0_g2 , temp_output_5_0_g2 );
 				
 				float mulTime59 = _TimeParameters.x * _CloudSpeed1;
 				float dotResult4_g1 = dot( float2( 12,534 ) , float2( 12.9898,78.233 ) );
@@ -613,20 +615,17 @@ Shader "Clouds"
 				simplePerlin3D15 = simplePerlin3D15*0.5 + 0.5;
 				float simplePerlin3D63 = snoise( ( float4( WorldPosition , 0.0 ) + appendResult64 ).xyz*_CloudSize1 );
 				simplePerlin3D63 = simplePerlin3D63*0.5 + 0.5;
-				float3 temp_output_5_0_g1 = ( ( WorldPosition - _Center ) / _Radius );
-				float dotResult8_g1 = dot( temp_output_5_0_g1 , temp_output_5_0_g1 );
-				float temp_output_23_0 = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 * pow( saturate( dotResult8_g1 ) , _hardness ) ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
 				
 
 				float3 BaseColor = _CloudColor.rgb;
 				float3 Normal = float3(0, 0, 1);
-				float3 Emission = ( ( _MainLightColor * _CloudColor ) * _SSSStrength * pow( _SSSPower , saturate( dotResult35 ) ) ).rgb;
+				float3 Emission = ( ( _MainLightColor * _CloudColor ) * _SSSStrength * pow( _SSSPower , saturate( dotResult35 ) ) * pow( saturate( dotResult8_g2 ) , _hardness ) ).rgb;
 				float3 Specular = 0.5;
 				float Metallic = 0;
 				float Smoothness = 0.5;
 				float Occlusion = 1;
-				float Alpha = temp_output_23_0;
-				float AlphaClipThreshold = temp_output_23_0;
+				float Alpha = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
+				float AlphaClipThreshold = 0.5;
 				float AlphaClipThresholdShadow = 0.5;
 				float3 BakedGI = 0;
 				float3 RefractionColor = 1;
@@ -877,8 +876,8 @@ Shader "Clouds"
 			#define _SPECULAR_SETUP 1
 			#define _SURFACE_TYPE_TRANSPARENT 1
 			#define ASE_DEPTH_WRITE_ON
+			#define ASE_EARLY_Z_DEPTH_OPTIMIZE
 			#define _EMISSION
-			#define _ALPHATEST_ON 1
 			#define ASE_SRP_VERSION 140008
 
 
@@ -939,10 +938,10 @@ Shader "Clouds"
 			float3 _Center;
 			float _SSSStrength;
 			float _SSSPower;
-			float _CloudSpeed1;
-			float _CloudSize1;
 			float _Radius;
 			float _hardness;
+			float _CloudSpeed1;
+			float _CloudSize1;
 			float _CloudCutoff;
 			float _CloudSoftness;
 			#ifdef ASE_TRANSMISSION
@@ -1189,13 +1188,10 @@ Shader "Clouds"
 				simplePerlin3D15 = simplePerlin3D15*0.5 + 0.5;
 				float simplePerlin3D63 = snoise( ( float4( WorldPosition , 0.0 ) + appendResult64 ).xyz*_CloudSize1 );
 				simplePerlin3D63 = simplePerlin3D63*0.5 + 0.5;
-				float3 temp_output_5_0_g1 = ( ( WorldPosition - _Center ) / _Radius );
-				float dotResult8_g1 = dot( temp_output_5_0_g1 , temp_output_5_0_g1 );
-				float temp_output_23_0 = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 * pow( saturate( dotResult8_g1 ) , _hardness ) ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
 				
 
-				float Alpha = temp_output_23_0;
-				float AlphaClipThreshold = temp_output_23_0;
+				float Alpha = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
+				float AlphaClipThreshold = 0.5;
 				#ifdef ASE_DEPTH_WRITE_ON
 					float DepthValue = IN.clipPos.z;
 				#endif
@@ -1234,8 +1230,8 @@ Shader "Clouds"
 			#pragma shader_feature_local_fragment _SPECULAR_SETUP
 			#define _SURFACE_TYPE_TRANSPARENT 1
 			#define ASE_DEPTH_WRITE_ON
+			#define ASE_EARLY_Z_DEPTH_OPTIMIZE
 			#define _EMISSION
-			#define _ALPHATEST_ON 1
 			#define ASE_SRP_VERSION 140008
 
 
@@ -1293,10 +1289,10 @@ Shader "Clouds"
 			float3 _Center;
 			float _SSSStrength;
 			float _SSSPower;
-			float _CloudSpeed1;
-			float _CloudSize1;
 			float _Radius;
 			float _hardness;
+			float _CloudSpeed1;
+			float _CloudSize1;
 			float _CloudCutoff;
 			float _CloudSoftness;
 			#ifdef ASE_TRANSMISSION
@@ -1549,6 +1545,8 @@ Shader "Clouds"
 				float3 ase_worldViewDir = ( _WorldSpaceCameraPos.xyz - WorldPosition );
 				ase_worldViewDir = normalize(ase_worldViewDir);
 				float dotResult35 = dot( ase_worldViewDir , -_MainLightPosition.xyz );
+				float3 temp_output_5_0_g2 = ( ( WorldPosition - _Center ) / _Radius );
+				float dotResult8_g2 = dot( temp_output_5_0_g2 , temp_output_5_0_g2 );
 				
 				float mulTime59 = _TimeParameters.x * _CloudSpeed1;
 				float dotResult4_g1 = dot( float2( 12,534 ) , float2( 12.9898,78.233 ) );
@@ -1558,15 +1556,12 @@ Shader "Clouds"
 				simplePerlin3D15 = simplePerlin3D15*0.5 + 0.5;
 				float simplePerlin3D63 = snoise( ( float4( WorldPosition , 0.0 ) + appendResult64 ).xyz*_CloudSize1 );
 				simplePerlin3D63 = simplePerlin3D63*0.5 + 0.5;
-				float3 temp_output_5_0_g1 = ( ( WorldPosition - _Center ) / _Radius );
-				float dotResult8_g1 = dot( temp_output_5_0_g1 , temp_output_5_0_g1 );
-				float temp_output_23_0 = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 * pow( saturate( dotResult8_g1 ) , _hardness ) ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
 				
 
 				float3 BaseColor = _CloudColor.rgb;
-				float3 Emission = ( ( _MainLightColor * _CloudColor ) * _SSSStrength * pow( _SSSPower , saturate( dotResult35 ) ) ).rgb;
-				float Alpha = temp_output_23_0;
-				float AlphaClipThreshold = temp_output_23_0;
+				float3 Emission = ( ( _MainLightColor * _CloudColor ) * _SSSStrength * pow( _SSSPower , saturate( dotResult35 ) ) * pow( saturate( dotResult8_g2 ) , _hardness ) ).rgb;
+				float Alpha = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
+				float AlphaClipThreshold = 0.5;
 
 				#ifdef _ALPHATEST_ON
 					clip(Alpha - AlphaClipThreshold);
@@ -1605,8 +1600,8 @@ Shader "Clouds"
 			#define _SPECULAR_SETUP 1
 			#define _SURFACE_TYPE_TRANSPARENT 1
 			#define ASE_DEPTH_WRITE_ON
+			#define ASE_EARLY_Z_DEPTH_OPTIMIZE
 			#define _EMISSION
-			#define _ALPHATEST_ON 1
 			#define ASE_SRP_VERSION 140008
 
 
@@ -1654,10 +1649,10 @@ Shader "Clouds"
 			float3 _Center;
 			float _SSSStrength;
 			float _SSSPower;
-			float _CloudSpeed1;
-			float _CloudSize1;
 			float _Radius;
 			float _hardness;
+			float _CloudSpeed1;
+			float _CloudSize1;
 			float _CloudCutoff;
 			float _CloudSoftness;
 			#ifdef ASE_TRANSMISSION
@@ -1899,14 +1894,11 @@ Shader "Clouds"
 				simplePerlin3D15 = simplePerlin3D15*0.5 + 0.5;
 				float simplePerlin3D63 = snoise( ( float4( WorldPosition , 0.0 ) + appendResult64 ).xyz*_CloudSize1 );
 				simplePerlin3D63 = simplePerlin3D63*0.5 + 0.5;
-				float3 temp_output_5_0_g1 = ( ( WorldPosition - _Center ) / _Radius );
-				float dotResult8_g1 = dot( temp_output_5_0_g1 , temp_output_5_0_g1 );
-				float temp_output_23_0 = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 * pow( saturate( dotResult8_g1 ) , _hardness ) ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
 				
 
 				float3 BaseColor = _CloudColor.rgb;
-				float Alpha = temp_output_23_0;
-				float AlphaClipThreshold = temp_output_23_0;
+				float Alpha = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
+				float AlphaClipThreshold = 0.5;
 
 				half4 color = half4(BaseColor, Alpha );
 
@@ -1940,8 +1932,8 @@ Shader "Clouds"
 			#define _SPECULAR_SETUP 1
 			#define _SURFACE_TYPE_TRANSPARENT 1
 			#define ASE_DEPTH_WRITE_ON
+			#define ASE_EARLY_Z_DEPTH_OPTIMIZE
 			#define _EMISSION
-			#define _ALPHATEST_ON 1
 			#define ASE_SRP_VERSION 140008
 
 
@@ -2007,10 +1999,10 @@ Shader "Clouds"
 			float3 _Center;
 			float _SSSStrength;
 			float _SSSPower;
-			float _CloudSpeed1;
-			float _CloudSize1;
 			float _Radius;
 			float _hardness;
+			float _CloudSpeed1;
+			float _CloudSize1;
 			float _CloudCutoff;
 			float _CloudSoftness;
 			#ifdef ASE_TRANSMISSION
@@ -2271,14 +2263,11 @@ Shader "Clouds"
 				simplePerlin3D15 = simplePerlin3D15*0.5 + 0.5;
 				float simplePerlin3D63 = snoise( ( float4( WorldPosition , 0.0 ) + appendResult64 ).xyz*_CloudSize1 );
 				simplePerlin3D63 = simplePerlin3D63*0.5 + 0.5;
-				float3 temp_output_5_0_g1 = ( ( WorldPosition - _Center ) / _Radius );
-				float dotResult8_g1 = dot( temp_output_5_0_g1 , temp_output_5_0_g1 );
-				float temp_output_23_0 = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 * pow( saturate( dotResult8_g1 ) , _hardness ) ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
 				
 
 				float3 Normal = float3(0, 0, 1);
-				float Alpha = temp_output_23_0;
-				float AlphaClipThreshold = temp_output_23_0;
+				float Alpha = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
+				float AlphaClipThreshold = 0.5;
 				#ifdef ASE_DEPTH_WRITE_ON
 					float DepthValue = IN.clipPos.z;
 				#endif
@@ -2351,8 +2340,8 @@ Shader "Clouds"
 			#pragma shader_feature_local_fragment _SPECULAR_SETUP
 			#define _SURFACE_TYPE_TRANSPARENT 1
 			#define ASE_DEPTH_WRITE_ON
+			#define ASE_EARLY_Z_DEPTH_OPTIMIZE
 			#define _EMISSION
-			#define _ALPHATEST_ON 1
 			#define ASE_SRP_VERSION 140008
 
 
@@ -2448,10 +2437,10 @@ Shader "Clouds"
 			float3 _Center;
 			float _SSSStrength;
 			float _SSSPower;
-			float _CloudSpeed1;
-			float _CloudSize1;
 			float _Radius;
 			float _hardness;
+			float _CloudSpeed1;
+			float _CloudSize1;
 			float _CloudCutoff;
 			float _CloudSoftness;
 			#ifdef ASE_TRANSMISSION
@@ -2742,6 +2731,8 @@ Shader "Clouds"
 				WorldViewDirection = SafeNormalize( WorldViewDirection );
 
 				float dotResult35 = dot( WorldViewDirection , -_MainLightPosition.xyz );
+				float3 temp_output_5_0_g2 = ( ( WorldPosition - _Center ) / _Radius );
+				float dotResult8_g2 = dot( temp_output_5_0_g2 , temp_output_5_0_g2 );
 				
 				float mulTime59 = _TimeParameters.x * _CloudSpeed1;
 				float dotResult4_g1 = dot( float2( 12,534 ) , float2( 12.9898,78.233 ) );
@@ -2751,20 +2742,17 @@ Shader "Clouds"
 				simplePerlin3D15 = simplePerlin3D15*0.5 + 0.5;
 				float simplePerlin3D63 = snoise( ( float4( WorldPosition , 0.0 ) + appendResult64 ).xyz*_CloudSize1 );
 				simplePerlin3D63 = simplePerlin3D63*0.5 + 0.5;
-				float3 temp_output_5_0_g1 = ( ( WorldPosition - _Center ) / _Radius );
-				float dotResult8_g1 = dot( temp_output_5_0_g1 , temp_output_5_0_g1 );
-				float temp_output_23_0 = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 * pow( saturate( dotResult8_g1 ) , _hardness ) ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
 				
 
 				float3 BaseColor = _CloudColor.rgb;
 				float3 Normal = float3(0, 0, 1);
-				float3 Emission = ( ( _MainLightColor * _CloudColor ) * _SSSStrength * pow( _SSSPower , saturate( dotResult35 ) ) ).rgb;
+				float3 Emission = ( ( _MainLightColor * _CloudColor ) * _SSSStrength * pow( _SSSPower , saturate( dotResult35 ) ) * pow( saturate( dotResult8_g2 ) , _hardness ) ).rgb;
 				float3 Specular = 0.5;
 				float Metallic = 0;
 				float Smoothness = 0.5;
 				float Occlusion = 1;
-				float Alpha = temp_output_23_0;
-				float AlphaClipThreshold = temp_output_23_0;
+				float Alpha = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
+				float AlphaClipThreshold = 0.5;
 				float AlphaClipThresholdShadow = 0.5;
 				float3 BakedGI = 0;
 				float3 RefractionColor = 1;
@@ -2882,8 +2870,8 @@ Shader "Clouds"
 			#define _SPECULAR_SETUP 1
 			#define _SURFACE_TYPE_TRANSPARENT 1
 			#define ASE_DEPTH_WRITE_ON
+			#define ASE_EARLY_Z_DEPTH_OPTIMIZE
 			#define _EMISSION
-			#define _ALPHATEST_ON 1
 			#define ASE_SRP_VERSION 140008
 
 
@@ -2928,10 +2916,10 @@ Shader "Clouds"
 			float3 _Center;
 			float _SSSStrength;
 			float _SSSPower;
-			float _CloudSpeed1;
-			float _CloudSize1;
 			float _Radius;
 			float _hardness;
+			float _CloudSpeed1;
+			float _CloudSize1;
 			float _CloudCutoff;
 			float _CloudSoftness;
 			#ifdef ASE_TRANSMISSION
@@ -3160,13 +3148,10 @@ Shader "Clouds"
 				simplePerlin3D15 = simplePerlin3D15*0.5 + 0.5;
 				float simplePerlin3D63 = snoise( ( float4( ase_worldPos , 0.0 ) + appendResult64 ).xyz*_CloudSize1 );
 				simplePerlin3D63 = simplePerlin3D63*0.5 + 0.5;
-				float3 temp_output_5_0_g1 = ( ( ase_worldPos - _Center ) / _Radius );
-				float dotResult8_g1 = dot( temp_output_5_0_g1 , temp_output_5_0_g1 );
-				float temp_output_23_0 = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 * pow( saturate( dotResult8_g1 ) , _hardness ) ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
 				
 
-				surfaceDescription.Alpha = temp_output_23_0;
-				surfaceDescription.AlphaClipThreshold = temp_output_23_0;
+				surfaceDescription.Alpha = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
+				surfaceDescription.AlphaClipThreshold = 0.5;
 
 				#if _ALPHATEST_ON
 					float alphaClipThreshold = 0.01f;
@@ -3204,8 +3189,8 @@ Shader "Clouds"
 			#define _SPECULAR_SETUP 1
 			#define _SURFACE_TYPE_TRANSPARENT 1
 			#define ASE_DEPTH_WRITE_ON
+			#define ASE_EARLY_Z_DEPTH_OPTIMIZE
 			#define _EMISSION
-			#define _ALPHATEST_ON 1
 			#define ASE_SRP_VERSION 140008
 
 
@@ -3250,10 +3235,10 @@ Shader "Clouds"
 			float3 _Center;
 			float _SSSStrength;
 			float _SSSPower;
-			float _CloudSpeed1;
-			float _CloudSize1;
 			float _Radius;
 			float _hardness;
+			float _CloudSpeed1;
+			float _CloudSize1;
 			float _CloudCutoff;
 			float _CloudSoftness;
 			#ifdef ASE_TRANSMISSION
@@ -3481,13 +3466,10 @@ Shader "Clouds"
 				simplePerlin3D15 = simplePerlin3D15*0.5 + 0.5;
 				float simplePerlin3D63 = snoise( ( float4( ase_worldPos , 0.0 ) + appendResult64 ).xyz*_CloudSize1 );
 				simplePerlin3D63 = simplePerlin3D63*0.5 + 0.5;
-				float3 temp_output_5_0_g1 = ( ( ase_worldPos - _Center ) / _Radius );
-				float dotResult8_g1 = dot( temp_output_5_0_g1 , temp_output_5_0_g1 );
-				float temp_output_23_0 = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 * pow( saturate( dotResult8_g1 ) , _hardness ) ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
 				
 
-				surfaceDescription.Alpha = temp_output_23_0;
-				surfaceDescription.AlphaClipThreshold = temp_output_23_0;
+				surfaceDescription.Alpha = pow( saturate( (0.0 + (( simplePerlin3D15 * simplePerlin3D63 ) - _CloudCutoff) * (1.0 - 0.0) / (1.0 - _CloudCutoff)) ) , _CloudSoftness );
+				surfaceDescription.AlphaClipThreshold = 0.5;
 
 				#if _ALPHATEST_ON
 					float alphaClipThreshold = 0.01f;
@@ -3528,7 +3510,7 @@ Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;6;0,0;Float;False;False;-1;
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;7;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;GBuffer;0;7;GBuffer;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;5;False;;10;False;;1;1;False;;10;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalGBuffer;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;8;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;SceneSelectionPass;0;8;SceneSelectionPass;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=SceneSelectionPass;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;9;0,0;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ScenePickingPass;0;9;ScenePickingPass;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Picking;False;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;1;160.1062,2.760451;Float;False;True;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;Clouds;94348b07e5e8bab40bd6c8a1e3df54cd;True;Forward;0;1;Forward;20;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;True;True;2;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;True;True;2;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Transparent=RenderType;Queue=Transparent=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;5;False;;10;False;;1;1;False;;10;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalForwardOnly;False;False;0;;0;0;Standard;41;Workflow;0;638259471682941164;Surface;1;638260002621468235;  Refraction Model;0;0;  Blend;0;0;Two Sided;1;638260003137499909;Fragment Normal Space,InvertActionOnDeselection;0;0;Forward Only;1;638259471776300722;Transmission;0;638259471773085680;  Transmission Shadow;0.5,False,;0;Translucency;0;638260067195717291;  Translucency Strength;1,False,;638260067048354026;  Normal Distortion;0.5,False,;0;  Scattering;25.7,False,;638260067057448941;  Direct;0.9,False,;0;  Ambient;0.1,False,;0;  Shadow;0,False,;638260067162892019;Cast Shadows;0;638260068411197677;  Use Shadow Threshold;0;638259458090228437;Receive Shadows;1;0;GPU Instancing;1;0;LOD CrossFade;1;0;Built-in Fog;1;0;_FinalColorxAlpha;0;0;Meta Pass;1;0;Override Baked GI;0;0;Extra Pre Pass;0;0;DOTS Instancing;0;0;Tessellation;0;0;  Phong;0;0;  Strength;0.5,False,;0;  Type;0;0;  Tess;16,False,;0;  Min;10,False,;0;  Max;25,False,;0;  Edge Length;16,False,;0;  Max Displacement;25,False,;0;Write Depth;1;638260067358044852;  Early Z;0;0;Vertex Position,InvertActionOnDeselection;1;0;Debug Display;0;0;Clear Coat;0;0;0;10;False;True;False;True;True;True;True;True;True;True;False;;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;1;160.1062,2.760451;Float;False;True;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;Clouds;94348b07e5e8bab40bd6c8a1e3df54cd;True;Forward;0;1;Forward;20;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;True;True;2;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;True;True;2;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Transparent=RenderType;Queue=Transparent=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;5;False;;10;False;;1;1;False;;10;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalForwardOnly;False;False;0;;0;0;Standard;41;Workflow;0;638259471682941164;Surface;1;638260002621468235;  Refraction Model;0;0;  Blend;0;0;Two Sided;1;638260003137499909;Fragment Normal Space,InvertActionOnDeselection;0;0;Forward Only;1;638259471776300722;Transmission;0;638259471773085680;  Transmission Shadow;0.5,False,;0;Translucency;0;638260067195717291;  Translucency Strength;1,False,;638260067048354026;  Normal Distortion;0.5,False,;0;  Scattering;25.7,False,;638260067057448941;  Direct;0.9,False,;0;  Ambient;0.1,False,;0;  Shadow;0,False,;638260067162892019;Cast Shadows;0;638260068411197677;  Use Shadow Threshold;0;638259458090228437;Receive Shadows;1;0;GPU Instancing;1;0;LOD CrossFade;1;0;Built-in Fog;1;0;_FinalColorxAlpha;0;0;Meta Pass;1;0;Override Baked GI;0;0;Extra Pre Pass;0;0;DOTS Instancing;0;0;Tessellation;0;0;  Phong;0;0;  Strength;0.5,False,;0;  Type;0;0;  Tess;16,False,;0;  Min;10,False,;0;  Max;25,False,;0;  Edge Length;16,False,;0;  Max Displacement;25,False,;0;Write Depth;1;638260067358044852;  Early Z;1;638261149073411911;Vertex Position,InvertActionOnDeselection;1;0;Debug Display;0;0;Clear Coat;0;0;0;10;False;True;False;True;True;True;True;True;True;True;False;;False;0
 Node;AmplifyShaderEditor.PowerNode;39;-779.348,-22.71269;Inherit;False;False;2;0;FLOAT;0;False;1;FLOAT;1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;42;-827.6475,-115.6777;Inherit;False;Property;_SSSStrength;SSS Strength;6;0;Create;True;0;0;0;False;0;False;0.22;0.22;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;40;-1119.349,-111.7127;Inherit;False;Property;_SSSPower;SSS Power;5;0;Create;True;0;0;0;False;0;False;0.5;2.5;0;5;0;1;FLOAT;0
@@ -3537,39 +3519,37 @@ Node;AmplifyShaderEditor.DotProductOpNode;35;-1076.349,12.28725;Inherit;False;2;
 Node;AmplifyShaderEditor.ViewDirInputsCoordNode;34;-1306.771,-98.52031;Inherit;False;World;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
 Node;AmplifyShaderEditor.NegateNode;36;-1278.268,54.64701;Inherit;False;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0
 Node;AmplifyShaderEditor.WorldSpaceLightDirHlpNode;37;-1561.737,-59.81002;Inherit;False;False;1;0;FLOAT;0;False;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;41;-543.0452,-91.75674;Inherit;False;3;3;0;COLOR;0,0,0,0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;COLOR;0
-Node;AmplifyShaderEditor.TFHCRemapNode;21;-562.6638,287.0837;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;0;False;4;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SaturateNode;22;-362.6631,284.0837;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;24;-460.6632,465.0837;Inherit;False;Property;_CloudSoftness;Cloud Softness;2;0;Create;True;0;0;0;False;0;False;0.25;0.25;0.01;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.PowerNode;23;-110.663,264.0838;Inherit;False;False;2;0;FLOAT;0;False;1;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;41;-543.0452,-91.75674;Inherit;False;4;4;0;COLOR;0,0,0,0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;COLOR;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;49;-701.4615,-218.5694;Inherit;False;2;2;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;1;COLOR;0
 Node;AmplifyShaderEditor.WireNode;50;-904.9169,-209.294;Inherit;False;1;0;COLOR;0,0,0,0;False;1;COLOR;0
 Node;AmplifyShaderEditor.LightColorNode;43;-860.0099,-293.7658;Inherit;False;0;3;COLOR;0;FLOAT3;1;FLOAT;2
 Node;AmplifyShaderEditor.WireNode;51;-52.38945,-6.112247;Inherit;False;1;0;COLOR;0,0,0,0;False;1;COLOR;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;53;-859.6798,319.7358;Inherit;False;3;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;18;-869.0495,458.9558;Inherit;False;Property;_CloudCutoff;Cloud Cutoff;3;0;Create;True;0;0;0;False;0;False;0.5277489;0.2924548;0;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.WorldPosInputsNode;58;-1946.605,216.1635;Inherit;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
-Node;AmplifyShaderEditor.DynamicAppendNode;64;-1908.997,366.7824;Inherit;False;FLOAT4;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT4;0
-Node;AmplifyShaderEditor.SimpleAddOpNode;60;-1708.607,342.1949;Inherit;False;2;2;0;FLOAT3;0,0,0;False;1;FLOAT4;0,0,0,0;False;1;FLOAT4;0
-Node;AmplifyShaderEditor.SimpleSubtractOpNode;65;-1721.02,220.2513;Inherit;False;2;0;FLOAT3;0,0,0;False;1;FLOAT4;0,0,0,0;False;1;FLOAT4;0
-Node;AmplifyShaderEditor.NoiseGeneratorNode;15;-1309.771,229.0933;Inherit;False;Simplex3D;True;False;2;0;FLOAT3;0,0,0;False;1;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;61;-1537.363,297.2596;Inherit;False;Property;_CloudSize1;Cloud Size;1;0;Create;True;0;0;0;False;0;False;1;5;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.NoiseGeneratorNode;63;-1312.722,335.9081;Inherit;False;Simplex3D;True;False;2;0;FLOAT3;0,0,0;False;1;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;62;-2390.13,361.3306;Inherit;False;Property;_CloudSpeed1;Cloud Speed;4;0;Create;True;0;0;0;False;0;False;0.15;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.FunctionNode;69;-2138.167,453.8019;Inherit;False;Random Range;-1;;1;7b754edb8aebbfb4a9ace907af661cfc;0;3;1;FLOAT2;12,534;False;2;FLOAT;0;False;3;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleTimeNode;59;-2142.371,370.6381;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.FunctionNode;54;-1392.438,447.9261;Inherit;False;SphereMask;-1;;1;988803ee12caf5f4690caee3c8c4a5bb;0;3;15;FLOAT3;0,0,0;False;14;FLOAT;0;False;12;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;57;-1575.931,751.4844;Inherit;False;Property;_hardness;hardness;9;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;56;-1756.352,753.9717;Inherit;False;Property;_Radius;Radius;8;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.Vector3Node;55;-1914.13,667.1544;Inherit;False;Property;_Center;Center;7;0;Create;True;0;0;0;False;0;False;0,0,0;0,0,0;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
-Node;AmplifyShaderEditor.WireNode;70;-1639.168,782.6827;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.WireNode;52;-468.4926,-196.6315;Inherit;False;1;0;COLOR;0,0,0,0;False;1;COLOR;0
 Node;AmplifyShaderEditor.ColorNode;19;-1121.159,-515.5225;Inherit;False;Property;_CloudColor;Cloud Color;0;0;Create;True;0;0;0;False;0;False;1,1,1,0;1,1,1,0;True;0;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;0;148.8735,-181.8608;Float;False;False;-1;2;UnityEditor.ShaderGraphLitGUI;0;12;New Amplify Shader;94348b07e5e8bab40bd6c8a1e3df54cd;True;ExtraPrePass;0;0;ExtraPrePass;5;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Lit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;0;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;0;False;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.FunctionNode;54;-936.2692,99.63637;Inherit;False;SphereMask;-1;;2;988803ee12caf5f4690caee3c8c4a5bb;0;3;15;FLOAT3;0,0,0;False;14;FLOAT;0;False;12;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.WorldPosInputsNode;58;-1822.087,416.9209;Inherit;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.DynamicAppendNode;64;-1784.479,567.5395;Inherit;False;FLOAT4;4;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;3;FLOAT;0;False;1;FLOAT4;0
+Node;AmplifyShaderEditor.SimpleAddOpNode;60;-1584.089,542.952;Inherit;False;2;2;0;FLOAT3;0,0,0;False;1;FLOAT4;0,0,0,0;False;1;FLOAT4;0
+Node;AmplifyShaderEditor.SimpleSubtractOpNode;65;-1596.502,421.0086;Inherit;False;2;0;FLOAT3;0,0,0;False;1;FLOAT4;0,0,0,0;False;1;FLOAT4;0
+Node;AmplifyShaderEditor.NoiseGeneratorNode;15;-1185.253,429.8506;Inherit;False;Simplex3D;True;False;2;0;FLOAT3;0,0,0;False;1;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;61;-1412.845,498.0166;Inherit;False;Property;_CloudSize1;Cloud Size;1;0;Create;True;0;0;0;False;0;False;1;5;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.NoiseGeneratorNode;63;-1188.204,536.6652;Inherit;False;Simplex3D;True;False;2;0;FLOAT3;0,0,0;False;1;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;62;-2265.61,562.0876;Inherit;False;Property;_CloudSpeed1;Cloud Speed;4;0;Create;True;0;0;0;False;0;False;0.15;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleTimeNode;59;-2017.852,571.3951;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.FunctionNode;69;-2030.801,651.6996;Inherit;False;Random Range;-1;;1;7b754edb8aebbfb4a9ace907af661cfc;0;3;1;FLOAT2;12,534;False;2;FLOAT;0;False;3;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.TFHCRemapNode;21;-586.6589,440.9747;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;0;False;4;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SaturateNode;22;-386.6584,437.9747;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;24;-484.6586,618.9749;Inherit;False;Property;_CloudSoftness;Cloud Softness;2;0;Create;True;0;0;0;False;0;False;0.25;0.25;0.01;1;0;1;FLOAT;0
+Node;AmplifyShaderEditor.PowerNode;23;-134.6582,417.9748;Inherit;False;False;2;0;FLOAT;0;False;1;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;53;-883.6737,473.6268;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;18;-893.0433,612.847;Inherit;False;Property;_CloudCutoff;Cloud Cutoff;3;0;Create;True;0;0;0;False;0;False;0.5277489;0.2924548;0;1;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;56;-1491.477,245.8738;Inherit;False;Property;_Radius;Radius;8;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.Vector3Node;55;-1498.445,100.3523;Inherit;False;Property;_Center;Center;7;0;Create;False;0;0;0;False;0;False;0,0,0;0,0,0;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.RangedFloatNode;57;-1492.314,322.212;Inherit;False;Property;_hardness;hardness;9;0;Create;True;0;0;0;False;0;False;2;0;0;0;0;1;FLOAT;0
 WireConnection;1;0;51;0
 WireConnection;1;2;41;0
 WireConnection;1;6;23;0
-WireConnection;1;7;23;0
 WireConnection;39;0;40;0
 WireConnection;39;1;38;0
 WireConnection;38;0;35;0
@@ -3579,18 +3559,15 @@ WireConnection;36;0;37;0
 WireConnection;41;0;49;0
 WireConnection;41;1;42;0
 WireConnection;41;2;39;0
-WireConnection;21;0;53;0
-WireConnection;21;1;18;0
-WireConnection;22;0;21;0
-WireConnection;23;0;22;0
-WireConnection;23;1;24;0
+WireConnection;41;3;54;0
 WireConnection;49;0;43;0
 WireConnection;49;1;50;0
 WireConnection;50;0;19;0
 WireConnection;51;0;52;0
-WireConnection;53;0;15;0
-WireConnection;53;1;63;0
-WireConnection;53;2;54;0
+WireConnection;52;0;19;0
+WireConnection;54;15;55;0
+WireConnection;54;14;56;0
+WireConnection;54;12;57;0
 WireConnection;64;0;59;0
 WireConnection;64;1;59;0
 WireConnection;64;2;69;0
@@ -3603,10 +3580,12 @@ WireConnection;15;1;61;0
 WireConnection;63;0;60;0
 WireConnection;63;1;61;0
 WireConnection;59;0;62;0
-WireConnection;54;15;55;0
-WireConnection;54;14;70;0
-WireConnection;54;12;57;0
-WireConnection;70;0;56;0
-WireConnection;52;0;19;0
+WireConnection;21;0;53;0
+WireConnection;21;1;18;0
+WireConnection;22;0;21;0
+WireConnection;23;0;22;0
+WireConnection;23;1;24;0
+WireConnection;53;0;15;0
+WireConnection;53;1;63;0
 ASEEND*/
-//CHKSM=EF33A29053B59156A8A97A4F4A1C16EA0DF2D335
+//CHKSM=C07CBD8C876CD4E894482DC66CBDDE11D4C51856

@@ -34,7 +34,6 @@ namespace Boxey.Core {
 
         private void Update() {
             if (planets.Length == 0) return;
-            //_target = GetTerraformTarget();
             var r = Helpers.GetCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(r, out var hit)) {
                 point.position = hit.point;

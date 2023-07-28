@@ -63,7 +63,6 @@ namespace Boxey.Core {
         private int _max = 2;
         private int _currentLOD = 0;
         private bool _isCreated;
-        private bool _isVisible;
         private Camera _cam;
         private MeshRotator _rotator;
         private Bounds _planetBounds;
@@ -78,6 +77,9 @@ namespace Boxey.Core {
 
         #endregion
 
+        [Title("Update Settings", titleAlignment: TitleAlignments.Centered)] 
+        [SerializeField, SuffixLabel("sec")] private float updateTime = 5;
+        
         [Title("World Settings", titleAlignment: TitleAlignments.Centered)]
         [SerializeField, EnumToggleButtons, HideLabel] private GenerationMethod genMethod = GenerationMethod.Instantly;
         [SerializeField, OnValueChanged("UpdateReal")] private int worldSizeInChunks = 4;
@@ -132,6 +134,7 @@ namespace Boxey.Core {
             //Create Needed Data
             _planetMat = new Material(Shader.Find("Shader Graphs/Planet"));
             _waterMat = new Material(Shader.Find("Shader Graphs/Water"));
+            GetComponent<CloudController>().SetCustomShaderData(transform.position, planetRadius);
             _terraformedChunks = new List<Chunk>();
             _localPositions = new List<Vector3Int>();
             _chunks = new Dictionary<Vector3Int, Chunk>();
@@ -151,7 +154,7 @@ namespace Boxey.Core {
                 }
             }
             CreateNoiseMaps();
-            layer = (int)_max / 2;
+            layer = _max / 2;
             UpdatePreview();
             if (genMethod == GenerationMethod.Instantly) {
                 CreateWorld();
@@ -203,7 +206,7 @@ namespace Boxey.Core {
             onGenerate?.Invoke();
             CreatePlanetLODS();
             FixMeshRotation();
-            //if (Application.isPlaying) _rotator.enabled = true;
+            if (Application.isPlaying) StartCoroutine(HandlePlanet());
             _isCreated = true;
             _chunkGenerationTime = Time.realtimeSinceStartup - startTime;
             _noiseMap = null;
@@ -231,7 +234,9 @@ namespace Boxey.Core {
             chunkHolder.localPosition = Vector3.zero;
             _waterObj = Instantiate(waterSphere, transform);
             _waterObj.name = "Water Sphere";
+            if (Application.isPlaying) StartCoroutine(HandlePlanet());
             _chunkGenerationTime = Time.realtimeSinceStartup - startTime;
+            _totalTime = _chunkGenerationTime + _noiseGenerationTime;
         }
         
         
@@ -301,29 +306,13 @@ namespace Boxey.Core {
         //Rendering
         private void Update() {
             if (Input.GetKeyUp(KeyCode.Space)) Create();
-            if (!_isCreated) return;
-            //Find distance from camera to planet and use to see this the chunks are active
+        }
+
+        private void FixedUpdate() {
+            if (!_isCreated || !CameraCanSee()) return;
             var distance = Vector3.Distance(_cam.transform.position, transform.position);
             _waterMat.renderQueue = distance <= planetLODS[0].viewDistance ? 3001 : 2999;
-            _isVisible = CanViewPlanet();
-            chunkHolder.gameObject.SetActive(_isVisible);
-            planetMeshObject.gameObject.SetActive(_isVisible);
-            atmosphereObject.gameObject.SetActive(_isVisible);
-            _waterObj.gameObject.SetActive(_isVisible);
-            if (!CanViewPlanet()) return;
-            //Chunk Update Command
-            HandleVisibility(distance);
-        }
-        //Says if planet is shown within camera bounds
-        private bool CanViewPlanet() {
-            _viewBound = GeometryUtility.CalculateFrustumPlanes(_cam);
-            return GeometryUtility.TestPlanesAABB(_viewBound, _planetBounds);
-        }
-        
-        private void HandleVisibility(float distance) {
-            var useLargeMesh = (distance > planetLODS[0].viewDistance + 5f);
-            if (useLargeMesh) {
-                if (chunkHolder.gameObject.activeSelf) chunkHolder.gameObject.SetActive(false);
+            if (distance > planetLODS[0].viewDistance + 5f) {
                 if (!planetMeshObject.gameObject.activeSelf) planetMeshObject.gameObject.SetActive(true);
                 //Get Current LOD Index
                 var currentLODIndex = planetLODS.Length - 1;
@@ -339,12 +328,26 @@ namespace Boxey.Core {
             }
             else {
                 //Normal Chunk Update
-                if (!chunkHolder.gameObject.activeSelf) chunkHolder.gameObject.SetActive(true);
                 if (planetMeshObject.gameObject.activeSelf) planetMeshObject.gameObject.SetActive(false);
                 foreach (var chunk in _chunks) {
                     chunk.Value.Update();
                 }
             }
+        }
+
+        //Says if planet is shown within camera bounds
+        private bool CameraCanSee() {
+            _viewBound = GeometryUtility.CalculateFrustumPlanes(_cam);
+            return GeometryUtility.TestPlanesAABB(_viewBound, _planetBounds);
+        }
+        //Calls every x seconds maybe better performance
+        private IEnumerator HandlePlanet() {
+            var visible = CameraCanSee();
+            if (chunkHolder.gameObject.activeSelf != visible) chunkHolder.gameObject.SetActive(visible);
+            if (planetMeshObject.gameObject.activeSelf != visible) planetMeshObject.gameObject.SetActive(visible);
+            if (atmosphereObject.gameObject.activeSelf != visible) atmosphereObject.gameObject.SetActive(visible);
+            if (_waterObj.gameObject.activeSelf != visible) _waterObj.gameObject.SetActive(visible);
+            yield return new WaitForSeconds(updateTime);
         }
         private void UpdateMeshLOD(int target) {
             if (target == _currentLOD) return;

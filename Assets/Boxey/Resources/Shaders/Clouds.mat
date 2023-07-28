@@ -41,16 +41,16 @@ Material:
     - _CloudCutoff: 0.43
     - _CloudSize: 0.03
     - _CloudSize1: 0.02
-    - _CloudSoftness: 0.01
+    - _CloudSoftness: 0.211
     - _CloudSpeed: 1
-    - _CloudSpeed1: 2
+    - _CloudSpeed1: 1
     - _EnvironmentReflections: 1
     - _Hardness: 5
     - _QueueControl: 1
     - _QueueOffset: 0
     - _Radius: 49.4
     - _ReceiveShadows: 1
-    - _SSSPower: 2.04
+    - _SSSPower: 0.02
     - _SSSStrength: 1
     - _Scale: -0.18
     - _SpecularHighlights: 1
