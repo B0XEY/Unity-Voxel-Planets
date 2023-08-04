@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be9650a198534dc791ecd5960155e22d, type: 3}
   m_Name: Asteroid
   m_EditorClassIdentifier: 
-  groundToughness: 5
+  groundToughness: 0.01
   useNoiseMap: 1
-  seed: -196101
+  seed: 468087
   randomSeed: 1
   noiseLayers:
   - type: 0
     useLastLayerAsMask: 0
     scale: 0.35
     layerPower: 1
+    gain: 0.5
+    strength: 1
     octaves: 4
     lacunarity: 3.66
     amplitude: 5.51
@@ -47,3 +49,9 @@ MonoBehaviour:
   foamStrength: 1.532
   foamCutoff: 2
   foamSpeed: 0.1
+  hasAtmosphere: 0
+  cloudColor: {r: 1, g: 1, b: 1, a: 1}
+  cloudSize: 0.02
+  cloudSoftness: 0.221
+  cloudiness: 0.43
+  cloudSpeed: 1

@@ -29,6 +29,14 @@ namespace Boxey.Extras {
             if (Input.GetKeyDown(KeyCode.P)) {
                 var scale = Time.timeScale == 0 ? 1 : 0;
                 Time.timeScale = scale;
+                if (scale == 1) {
+                    Cursor.visible = false;
+                    Cursor.lockState = CursorLockMode.Locked;
+                }else
+                {
+                    Cursor.visible = true;
+                    Cursor.lockState = CursorLockMode.None;
+                }
             }
 
             float mult = 1;

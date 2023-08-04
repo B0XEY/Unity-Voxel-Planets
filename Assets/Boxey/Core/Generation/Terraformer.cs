@@ -6,10 +6,11 @@ using UnityEngine;
 
 namespace Boxey.Core {
     public class Terraformer : MonoBehaviour {
-        private PlanetCreator _target;
-        private PlanetList _list;
+        private PlanetCreator m_target;
+        private PlanetList m_list;
+        private bool m_terraforming;
         public void SetList() {
-            planets = _list.GetPlanets();
+            planets = m_list.GetPlanets();
         }
 
         [Title("Terraforming", titleAlignment: TitleAlignments.Centered)] 
@@ -26,55 +27,39 @@ namespace Boxey.Core {
         [Title("Planets", titleAlignment: TitleAlignments.Centered)] 
         [SerializeField] private PlanetCreator[] planets;
 
-        private bool _terraforming;
-        
         private void Awake() {
-            TryGetComponent<PlanetList>(out _list);
+            TryGetComponent(out m_list);
         }
-
         private void Update() {
             if (planets.Length == 0) return;
-            var r = Helpers.GetCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(r, out var hit)) {
+            var ray = Helpers.GetCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit)) {
                 point.position = hit.point;
                 if (hit.transform.name == "Sun") return;
                 if (!doTerraform && hit.transform.gameObject.layer != 3) return;
-                _target = hit.transform.parent.GetComponentInParent<PlanetCreator>();
-                if (_target == null) return;
-                point.SetParent(_target.transform);
+                m_target = hit.transform.parent.GetComponentInParent<PlanetCreator>();
+                if (m_target == null) return;
+                point.SetParent(m_target.transform);
                 var numbers = hit.transform.name.Split(",");
                 var currentChunk = new Vector3Int(int.Parse(numbers[0]), int.Parse(numbers[1]), int.Parse(numbers[2]));
-                float3 terraformPoint = (point.localPosition + -_target.chunkOffset);
+                float3 terraformPoint = (point.localPosition + -m_target.chunkOffset);
                 if (Input.GetKey(KeyCode.Mouse0)) {
-                    _terraforming = true;
-                    _target.Terrafrom(currentChunk, terraformPoint, updateRange, brushRadius, brushSpeed, true);
+                    m_terraforming = true;
+                    m_target.Terrafrom(currentChunk, terraformPoint, updateRange, brushRadius, brushSpeed, true);
                 }
                 else if (Input.GetKey(KeyCode.Mouse1)) {
-                    _terraforming = true;
-                    _target.Terrafrom(currentChunk, terraformPoint, updateRange, brushRadius, brushSpeed, false);
+                    m_terraforming = true;
+                    m_target.Terrafrom(currentChunk, terraformPoint, updateRange, brushRadius, brushSpeed, false);
                 }
-                if (Input.GetKeyUp(KeyCode.Mouse0) && _terraforming) {
-                    _terraforming = false;
-                    _target.FinishTerraform();
+                if (Input.GetKeyUp(KeyCode.Mouse0) && m_terraforming) {
+                    m_terraforming = false;
+                    m_target.FinishTerraform();
                 }
                 else if (Input.GetKeyUp(KeyCode.Mouse1)) {
-                    _terraforming = false;
-                    _target.FinishTerraform();
+                    m_terraforming = false;
+                    m_target.FinishTerraform();
                 }
             }
-        }
-        private PlanetCreator GetTerraformTarget() {
-            PlanetCreator target = null;
-            float minDist = Mathf.Infinity;
-            Vector3 currentPos = transform.position;
-            foreach (PlanetCreator t in planets) {
-                float dist = Vector3.Distance(t.transform.position, currentPos);
-                if (dist < minDist) {
-                    target = t;
-                    minDist = dist;
-                }
-            }
-            return target;
         }
     }
 }

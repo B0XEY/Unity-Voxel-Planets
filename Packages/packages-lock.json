@@ -1,14 +1,5 @@
 {
   "dependencies": {
-    "com.unbegames.noise": {
-      "version": "https://github.com/unbeGames/noise.git",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.mathematics": "1.2.1"
-      },
-      "hash": "d2469ae88cfa4c3373c3b320f33f0d5ef9c426db"
-    },
     "com.unity.ai.navigation": {
       "version": "1.1.4",
       "depth": 0,

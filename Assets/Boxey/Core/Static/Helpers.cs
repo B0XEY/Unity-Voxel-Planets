@@ -108,7 +108,7 @@ namespace Boxey.Core.Static {
         }
 
         public static string EncryptDecrypt(this string s) {
-            string modifiedData = "";
+            var modifiedData = "";
             for (int i = 0; i < s.Length; i++) {
                 modifiedData += (char)(s[i] ^ CodeWord[i % CodeWord.Length]);
             }

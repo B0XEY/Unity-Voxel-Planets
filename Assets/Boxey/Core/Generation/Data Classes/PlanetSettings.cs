@@ -53,7 +53,8 @@ namespace Boxey.Core {
         
         //Clouds
         [Title("Clouds Settings", titleAlignment: TitleAlignments.Centered)]
-        [TabGroup("Sky")] public Color cloudColor = Color.white;
+        [TabGroup("Sky")] public bool hasAtmosphere = true;
+        [TabGroup("Sky"), ColorUsage(true,true)] public Color cloudColor = Color.white;
         [TabGroup("Sky")] public float cloudSize = .02f;
         [TabGroup("Sky")] public float cloudSoftness = .221f;
         [TabGroup("Sky")] public float cloudiness = .43f;
