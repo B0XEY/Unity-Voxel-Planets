@@ -1,15 +1,14 @@
-using System;
+using Boxey.Core.Editor;
 using Boxey.Core.Static;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Boxey.Core {
     public class SkyManager : MonoBehaviour {
-        private PlanetCreator m_planet;
-        private float m_offset;
-        private Camera m_cam;
-        private Matrix4x4 m_matrix;
-        private bool m_isCreated;
+        private PlanetCreator _planet;
+        private float _offset;
+        private Camera _cam;
+        private Matrix4x4 _matrix;
+        private bool _isCreated;
 
         public void SendUpdatedData(PlanetSettings settings) {
             if (_planetSettings != settings) _planetSettings = settings;
@@ -23,35 +22,37 @@ namespace Boxey.Core {
             _cloudMat.SetFloat("_CloudSpeed", _planetSettings.cloudSpeed);
             _cloudMat.SetColor("_CloudColor", _planetSettings.cloudColor);
             _cloudMat.SetVector("_Center", new Vector4(center.x,center.y,center.z));
-            m_isCreated = true;
+            _isCreated = true;
         }
 
-        [Title("Planet Info")] 
-        [ShowInInspector, ReadOnly] private LodData _planetLOD;
-        [ShowInInspector, ReadOnly, InlineEditor] private PlanetSettings _planetSettings;
-        [ShowInInspector, ReadOnly, InlineEditor] private Material _cloudMat;
+        [Header("Planet Info")] 
+        [Line (1f, 1f,1f,1f)]
+        [ShowOnly] private LodData _planetLOD;
+        [ShowOnly] private PlanetSettings _planetSettings;
+        [ShowOnly] private Material _cloudMat;
         
-        [Title("Default Info")]
+        [Header("Default Info")]
+        [Line (1f, 1f,1f,1f)]
         [SerializeField] private Material cloud;
         [SerializeField] private float cloudHeight = 15;
         [SerializeField, Range(0.01f, 5f)] private float cloudSpacing = 1;
         
-        [Title("Settings")] 
+        [Header("Settings")] 
+        [Line (1f, 1f,1f,1f)]
         [SerializeField] private Mesh cloudMesh;
         [SerializeField] private int cloudDrawLayer;
 
         private void Awake() {
-            m_cam = Helpers.GetCamera;
-            m_planet = GetComponent<PlanetCreator>();
+            _cam = Helpers.GetCamera;
+            _planet = GetComponent<PlanetCreator>();
         }
-
         private void Update() {
-            if (!m_isCreated || !_planetSettings.hasAtmosphere) return;
-            _planetLOD = m_planet.GetCurrentLOD();
+            if (!_isCreated || !_planetSettings.hasAtmosphere) return;
+            _planetLOD = _planet.GetCurrentLOD();
             for (int i = 0; i < _planetLOD.cloudLayers; i++) {
                 float mult = (float)i / _planetLOD.cloudLayers * cloudSpacing;
-                m_matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one * (mult + cloudHeight));
-                Graphics.DrawMesh(cloudMesh, m_matrix, _cloudMat, cloudDrawLayer, m_cam);
+                _matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one * (mult + cloudHeight));
+                Graphics.DrawMesh(cloudMesh, _matrix, _cloudMat, cloudDrawLayer, _cam);
             }
         }
     }

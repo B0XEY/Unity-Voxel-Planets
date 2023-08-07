@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Boxey.Core.Components;
+using Boxey.Core.Editor;
 using Boxey.Core.Static;
-using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 using UnityMeshSimplifier;
 using Random = UnityEngine.Random;
 
@@ -20,14 +21,14 @@ namespace Boxey.Core {
     }
     [Serializable]
     public class NoiseSettings {
-        [Title("Settings")]
+        [Header("Settings")]
         public NoiseType type = NoiseType.Normal;
-        [LabelText("Use Mask"), Tooltip("Says it this layer will se the previous layer as a mask")]public bool useLastLayerAsMask;
+        [Label("Use Mask"), Tooltip("Says it this layer will se the previous layer as a mask")] public bool useLastLayerAsMask;
         public float scale = .35f;
         [Range(0.01f, 2f)] public float layerPower = 1;
         [Space(5f)]
-        [HideIf("@type == NoiseType.Normal")] [Range(0.01f, 5f)] public float gain = .5f;
-        [HideIf("@type == NoiseType.Normal")] [Range(0.01f, 2f)] public float strength = 1;
+        [Range(0.01f, 5f), Tooltip("Does NOT Apply to Normal Noise Types")] public float gain = .5f;
+        [Range(0.01f, 2f), Tooltip("Does NOT Apply to Normal Noise Types")] public float strength = 1;
         [Space(5f)]
         [Range(1, 8)] public int octaves = 3;
         [Range(0.01f, 5f)] public float lacunarity = 3.66f;
@@ -45,6 +46,28 @@ namespace Boxey.Core {
         [Space(10f)]
         [Range(1,100)] public int cloudLayers;
     }
+    public struct ChunkData{
+        public readonly PlanetSettings Settings;
+        public readonly int Size;
+        public readonly float Radius;
+        public readonly float Value;
+        public readonly float Create;
+        public readonly bool Smooth;
+        public readonly bool Flat;
+        public LodData LOD;
+        public readonly Material Mat;
+        public ChunkData(PlanetSettings settings, int size, float radius, float value, float create, bool smooth, bool flat, LodData lod, Material mat){
+            Settings = settings;
+            Size = size;
+            Radius = radius;
+            Value = value;
+            Create = create;
+            Smooth = smooth;
+            Flat = flat;
+            LOD = lod;
+            Mat = mat;
+        }
+    }
     [RequireComponent(typeof(SkyManager))]
     public class PlanetCreator : MonoBehaviour {
         #region Private Varibles
@@ -53,7 +76,7 @@ namespace Boxey.Core {
             Instantly,
             Enumerator
         }
-        private void UpdateReal() => _realSize = (worldSizeInChunks * chunkSize);
+        private void UpdateReal() => realSize = (worldSizeInChunks * chunkSize);
 
         private List<Chunk> _terraformedChunks;
         private List<Vector3Int> _localPositions;
@@ -72,13 +95,19 @@ namespace Boxey.Core {
         private Material _planetMat;
         private Material _waterMat;
 
+        [HideInInspector] public bool settingsFoldedOut;
+        
         #endregion
+        private void RandomSeed() => seed = Random.Range(-999999, 999999);
 
-        [Title("World Settings", titleAlignment: TitleAlignments.Centered)]
-        [SerializeField, EnumToggleButtons, HideLabel] private float updateTime = 5f;
-        [SerializeField, EnumToggleButtons, HideLabel] private GenerationMethod genMethod = GenerationMethod.Instantly;
-        [SerializeField, OnValueChanged("UpdateReal")] private int worldSizeInChunks = 4;
-        [SerializeField, OnValueChanged("UpdateReal")] private int chunkSize = 16;
+        [Header("Update Settings")]
+        [Line (1.5f, .5f,.5f,.5f)]
+        [SerializeField] private float updateTime = 5f;
+        [Header("World Settings")]
+        [Line (1.5f, .5f,.5f,.5f)]
+        [SerializeField, EnumButtons] private GenerationMethod genMethod = GenerationMethod.Instantly;
+        [SerializeField, OnChanged("UpdateReal")] private int worldSizeInChunks = 4;
+        [SerializeField, OnChanged("UpdateReal")] private int chunkSize = 16;
         [SerializeField, Range(1, 150f)] private float planetRadius = 35;
         [SerializeField] private LodData[] planetLODS;
         [Space] 
@@ -87,13 +116,17 @@ namespace Boxey.Core {
         [SerializeField] private bool doSmoothing = true;
         [SerializeField] private bool doFlatShading;
         [Space]
-        [OnValueChanged("UpdatePlanetLook"), Required]
-        [SerializeField, Tooltip("Color Settings. Control the Colors of the Planet"), InlineEditor] private PlanetSettings planetSettings;
+        [SerializeField] private int seed;
+        [SerializeField] private bool randomSeed = true;
+        [OnChanged("UpdatePlanetLook"), Required]
+        [SerializeField, Tooltip("Color Settings. Control the Colors of the Planet")] private PlanetSettings planetSettings;
 
-        [Title("Events", titleAlignment: TitleAlignments.Centered)] 
+        [Header("Events")] 
+        [Line (1.5f, .5f,.5f,.5f)]
         public UnityEvent onGenerate;
 
-        [Title("Other", titleAlignment: TitleAlignments.Centered)]
+        [Header("Other")]
+        [Line (1.5f, .5f,.5f,.5f)]
         [SerializeField, Required] private Transform chunkHolder;
         [SerializeField, Required] private Transform planetMeshObject;
         [SerializeField, Required] private GameObject waterSphere;
@@ -101,12 +134,12 @@ namespace Boxey.Core {
         [SerializeField] private SkyManager skyManager;
         [Space] 
         [SerializeField] private bool showChunkBounds;
-        [SerializeField, ShowIf("@showChunkBounds")] private bool outline = true;
-        [SerializeField, ShowIf("@showChunkBounds")] private Color normalColor = new(255f/255f, 235f/255f, 4f/255f, 25f/255f);
-        [SerializeField, ShowIf("@showChunkBounds")] private Color terraformingColor = new(255f/255f, 4/255f, 0f/255f, 75f/255f);
+        [SerializeField, ShowIf("showChunkBounds")] private bool outline = true;
+        [SerializeField, ShowIf("showChunkBounds")] private Color normalColor = new(255f/255f, 235f/255f, 4f/255f, 25f/255f);
+        [SerializeField, ShowIf("showChunkBounds")] private Color terraformingColor = new(255f/255f, 4/255f, 0f/255f, 75f/255f);
         [Space]
-        [ShowInInspector, ReadOnly, SuffixLabel("units")] private int _realSize;
-        [ShowInInspector, ReadOnly, SuffixLabel("sec")] private float _totalTime;
+        [SerializeField, ShowOnly] private int realSize;
+        [SerializeField, ShowOnly] private float totalTime;
 
         private void Awake() {
             _cam = Helpers.GetCamera;
@@ -118,32 +151,8 @@ namespace Boxey.Core {
 
             if (skyManager == null) TryGetComponent(out skyManager);
         }
-        
-        public struct ChunkData{
-            public PlanetSettings settings;
-            public int size;
-            public float radius;
-            public float value;
-            public float create;
-            public bool smooth;
-            public bool flat;
-            public LodData lod;
-            public Material mat;
 
-            public ChunkData(PlanetSettings settings, int size, float radius, float value, float create, bool smooth, bool flat, LodData lod, Material mat){
-                this.settings = settings;
-                this.size = size;
-                this.radius = radius;
-                this.value = value;
-                this.create = create;
-                this.smooth = smooth;
-                this.flat = flat;
-                this.lod = lod;
-                this.mat = mat;
-            }
-        }
-
-        [Button, ButtonGroup("Gen")]
+        [Button]
         private void Create() {
             var startTime = Time.realtimeSinceStartup;
             _isCreated = false;
@@ -182,6 +191,11 @@ namespace Boxey.Core {
                     mesh.Clear();
                 }
             }
+            planetSettings.seed = seed;
+            if (randomSeed){
+                RandomSeed();
+                planetSettings.seed = seed;
+            }
             if (genMethod == GenerationMethod.Instantly) {
                 CreateWorld(chunkData);
                 UpdatePlanetLook();
@@ -192,7 +206,7 @@ namespace Boxey.Core {
                 }
                 onGenerate?.Invoke();
                 _isCreated = true;
-                _totalTime = Time.realtimeSinceStartup - startTime;
+                totalTime = Time.realtimeSinceStartup - startTime;
             }else {
                 StartCoroutine(CreateWorldDynamic(chunkData));
             }
@@ -230,7 +244,7 @@ namespace Boxey.Core {
                 StartCoroutine(HandlePlanet());
             }
             _isCreated = true;
-            _totalTime = Time.realtimeSinceStartup - startTime;
+            totalTime = Time.realtimeSinceStartup - startTime;
         }
         private void CreateWorld(ChunkData data) {
             var size = worldSizeInChunks;
@@ -255,7 +269,7 @@ namespace Boxey.Core {
             
         }
         
-        [Button("Update Look"), ButtonGroup("Function")]
+        [Button("Update Look")]
         private void UpdatePlanetLook() {
             var radius = (worldSizeInChunks * chunkSize) / 2;
             chunkOffset = new Vector3Int(-radius, -radius, -radius);
@@ -299,7 +313,7 @@ namespace Boxey.Core {
             _waterObj.GetComponent<MeshRenderer>().sharedMaterial = _waterMat;
             _waterObj.SetActive(scale != 0);
         }
-        [Button("Destroy"), ButtonGroup("Function")]
+        [Button("Destroy")]
         private void DestroyWorld() {
             _chunks?.Clear();
             foreach (var mesh in _planetMeshes) {
@@ -374,7 +388,6 @@ namespace Boxey.Core {
             _planetMeshFilter.sharedMesh = _planetMeshes[target];
             _currentLOD = target;
         }
-
         public LodData GetCurrentLOD() => planetLODS[_currentLOD];
 
         #region LOD Mesh Creation

@@ -32,17 +32,17 @@ namespace Boxey.Core {
         private readonly MeshRenderer _chunkRenderer;
         private readonly MeshCollider _chunkCollider;
 
-        public Chunk(Vector3Int position, Vector3 offset,  int chunkSize, PlanetCreator.ChunkData data) {
+        public Chunk(Vector3Int position, Vector3 offset,  int chunkSize, ChunkData data) {
             MeshGenerated = false;
             _size = chunkSize;
-            _valueGate = data.value;
-            _createGate = data.create;
-            _doSmoothing = data.smooth;
-            _doFlatShading = data.flat;
-            _lodData = data.lod;
-            _mat = data.mat;
-            if (!Application.isPlaying) _noiseMap = VoxelNoise.GetPlanetNoiseMap(chunkSize, data.size, position.ToFloat3(), data.radius, data.settings);
-            else _noiseMap = VoxelNoise.GetPlanetNoiseMapJob(chunkSize, data.size, position.ToFloat3(), data.radius, data.settings);
+            _valueGate = data.Value;
+            _createGate = data.Create;
+            _doSmoothing = data.Smooth;
+            _doFlatShading = data.Flat;
+            _lodData = data.LOD;
+            _mat = data.Mat;
+            if (!Application.isPlaying) _noiseMap = VoxelNoise.GetPlanetNoiseMap(chunkSize, data.Size, position.ToFloat3(), data.Radius, data.Settings);
+            else _noiseMap = VoxelNoise.GetPlanetNoiseMapJob(chunkSize, data.Size, position.ToFloat3(), data.Radius, data.Settings);
             if (_doFlatShading) _verticesList = new List<Vector3>();
             else _verticesDictionary = new Dictionary<Vector3, int>();
             _triangles = new List<int>();

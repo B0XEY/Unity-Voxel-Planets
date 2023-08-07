@@ -1,14 +1,16 @@
-using Sirenix.OdinInspector;
+using Boxey.Core.Editor;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Boxey.Core.Components {
     public class PlanetList : MonoBehaviour {
+        [Header("Events")]
+        [Line (1.5f, .5f,.5f,.5f)]
         [SerializeField] private UnityEvent onGetPlanets;
         
-        [Title("Planets", titleAlignment: TitleAlignments.Centered)] 
+        [Header("Planets")] 
+        [Line (1.5f, .5f,.5f,.5f)]
         [SerializeField] private PlanetCreator[] planets;
-        [Button("Get Planets", ButtonSizes.Large)]
         public void GetAllPlanets() {
             planets = FindObjectsOfType<PlanetCreator>();
             onGetPlanets?.Invoke();

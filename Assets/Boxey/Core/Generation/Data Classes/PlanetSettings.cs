@@ -1,63 +1,65 @@
-﻿using Sirenix.OdinInspector;
+﻿using Boxey.Core.Editor;
 using UnityEngine;
-using UnityEngine.Serialization;
-using Random = UnityEngine.Random;
 
 namespace Boxey.Core {
     [CreateAssetMenu(menuName = "Data/Planet Settings", fileName = "New Planet Settings", order = -5)]
-    public class PlanetSettings : ScriptableObject {
-        public void RandomSeed() => seed = Random.Range(-999999, 999999);
-        private void RandomSeedToggle() => randomSeed = !randomSeed;
+    public class PlanetSettings : ScriptableObject{
+        [HideInInspector] public int seed;
         //Terraforming
-        [Title("Terraform Settings", TitleAlignment = TitleAlignments.Centered)] 
-        [TabGroup("Basic")] [Range(0.01f, 10f)]public float groundToughness = 1f;
+        [Header("Terraform Settings")] 
+        [Line (1.5f, .5f,.5f,.5f)]
+        [Range(0.01f, 10f)]public float groundToughness = 1f;
         //Noise
-        [Title("Noise Settings", TitleAlignment = TitleAlignments.Centered)]
-        [TabGroup("Basic")] public bool useNoiseMap;
-        [TabGroup("Basic"), ShowIf("@useNoiseMap")]
-        [InlineButton("RandomSeed", " R"), InlineButton("RandomSeedToggle", "T")] public int seed;
-        [TabGroup("Basic"), ShowIf("@useNoiseMap")] [ReadOnly] public bool randomSeed = true;
+        [Header("Noise Settings")]
+        [Line (1.5f, .5f,.5f,.5f)]
+        public bool useNoiseMap;
         [Space] 
-        [TabGroup("Basic"), ShowIf("@useNoiseMap")] public NoiseSettings[] noiseLayers = new NoiseSettings[1];
+        public NoiseSettings[] noiseLayers = new NoiseSettings[1];
 
         //Colors
-        [Title("Ground Settings", titleAlignment: TitleAlignments.Centered)]
-        [TabGroup("Planet")] [Range(0f, 1.5f)] public float groundHighlightsStrength = .6f;
-        [TabGroup("Planet")] public Color ground = new (22/255f, 185/255f, 84/255f, 1);
-        [TabGroup("Planet")] public Color groundHighlight = new (22/255f, 171/255f, 28/255f, 1);
+        [Header("Ground Settings")]
+        [Line (1.5f, .5f,.5f,.5f)]
+        [Range(0f, 1.5f)] public float groundHighlightsStrength = .6f;
+        public Color ground = new (22/255f, 185/255f, 84/255f, 1);
+        public Color groundHighlight = new (22/255f, 171/255f, 28/255f, 1);
         
-        [Title("Sand Settings", titleAlignment: TitleAlignments.Centered)]
-        [TabGroup("Planet")] [Range(0f, 1.5f)] public float sandHighlightsStrength = .653f;
-        [TabGroup("Planet")] public float sandHeight = 49.4f;
-        [TabGroup("Planet")] public Color sand = new (255/255f, 244/255f, 136/255f, 1);
-        [TabGroup("Planet")] public Color sandHighlights = new (209/255f, 181/255f, 102/255f, 1);
+        [Header("Sand Settings")]
+        [Line (1.5f, .5f,.5f,.5f)]
+        [Range(0f, 1.5f)] public float sandHighlightsStrength = .653f;
+        public float sandHeight = 49.4f;
+        public Color sand = new (255/255f, 244/255f, 136/255f, 1);
+        public Color sandHighlights = new (209/255f, 181/255f, 102/255f, 1);
 
-        [Title("Rock Settings", titleAlignment: TitleAlignments.Centered)] 
-        [TabGroup("Planet")] [Range(0f, 1.5f)] public float rockHighlightsStrength = .172f;
-        [TabGroup("Planet")] [Range(0f, 1f)] public float rockThreshold = .823f;
-        [TabGroup("Planet")] public Color rock = new (106/255f, 80/255f, 66/255f , 1);
-        [TabGroup("Planet")] public Color rockHighlights = new (26/255f, 21/255f, 17/255f, 1);
+        [Header("Rock Settings")] 
+        [Line (1.5f, .5f,.5f,.5f)]
+        [Range(0f, 1.5f)] public float rockHighlightsStrength = .172f;
+        [Range(0f, 1f)] public float rockThreshold = .823f;
+        public Color rock = new (106/255f, 80/255f, 66/255f , 1);
+        public Color rockHighlights = new (26/255f, 21/255f, 17/255f, 1);
         //Water
-        [Title("Water Settings", titleAlignment: TitleAlignments.Centered)]
-        [TabGroup("Water")] public Color shallowColor = new (71/255f, 123/255f, 255/255f, 150/255f);
-        [TabGroup("Water")] public Color deepColor = new (10/255f, 117/255f, 236/255f, 235/255f);
-        [TabGroup("Water")] public float deepFadeDistance = -2.13f;
-        [TabGroup("Water")] [Range(0f, 2f)] public float depthStrength = .247f;
+        [Header("Water Settings")]
+        [Line (1.5f, .5f,.5f,.5f)]
+        public Color shallowColor = new (71/255f, 123/255f, 255/255f, 150/255f);
+        public Color deepColor = new (10/255f, 117/255f, 236/255f, 235/255f);
+        public float deepFadeDistance = -2.13f;
+        [Range(0f, 2f)] public float depthStrength = .247f;
         
-        [Title("Water Foam Settings", titleAlignment: TitleAlignments.Centered)]
-        [TabGroup("Water")] public Color foamColor = Color.white;
-        [TabGroup("Water")] public float foamAmount = -.05f;
-        [TabGroup("Water")] [Range(0f, 2f)] public float foamStrength = 1.107f;
-        [TabGroup("Water")] [Range(0f, 2f)] public float foamCutoff = 1f;
-        [TabGroup("Water")] [Range(0.01f, 1f)] public float foamSpeed = 0.05f;
+        [Header("Water Foam Settings")]
+        [Line (1.5f, .5f,.5f,.5f)]
+        public Color foamColor = Color.white;
+        public float foamAmount = -.05f;
+        [Range(0f, 2f)] public float foamStrength = 1.107f;
+        [Range(0f, 2f)] public float foamCutoff = 1f;
+        [Range(0.01f, 1f)] public float foamSpeed = 0.05f;
         
         //Clouds
-        [Title("Clouds Settings", titleAlignment: TitleAlignments.Centered)]
-        [TabGroup("Sky")] public bool hasAtmosphere = true;
-        [TabGroup("Sky"), ColorUsage(true,true)] public Color cloudColor = Color.white;
-        [TabGroup("Sky")] public float cloudSize = .02f;
-        [TabGroup("Sky")] public float cloudSoftness = .221f;
-        [TabGroup("Sky")] public float cloudiness = .43f;
-        [TabGroup("Sky")] public float cloudSpeed = 1;
+        [Header("Clouds Settings")]
+        [Line (1.5f, .5f,.5f,.5f)]
+        public bool hasAtmosphere = true;
+        [ColorUsage(true,true)] public Color cloudColor = Color.white;
+        public float cloudSize = .02f;
+        public float cloudSoftness = .221f;
+        public float cloudiness = .43f;
+        public float cloudSpeed = 1;
     }
 }

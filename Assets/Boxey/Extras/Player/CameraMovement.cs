@@ -1,30 +1,20 @@
-using Boxey.Core;
-using Boxey.Core.Components;
-using Sirenix.OdinInspector;
+using Boxey.Core.Editor;
 using UnityEngine;
 
 namespace Boxey.Extras {
     public class CameraMovement : MonoBehaviour {
         private float _rotationX;
         private float _rotationY;
-        private PlanetList _list;
-        public void SetList() {
-            planets = _list.GetPlanets();
-        }
-        [Title("Movement")]
+        [Header("Movement")]
+        [Line (1.5f, .5f,.5f,.5f)]
         [SerializeField] private float movementSpeed = 10f;
         [SerializeField] private float rotationSpeed = 100f;
         
-        [Title("Planets", titleAlignment: TitleAlignments.Centered)] 
-        [SerializeField] private PlanetCreator[] planets;
-        
 
         private void Awake() {
-            TryGetComponent<PlanetList>(out _list);
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
         }
-
         private void Update() {
             if (Input.GetKeyDown(KeyCode.P)) {
                 var scale = Time.timeScale == 0 ? 1 : 0;

@@ -1,34 +1,36 @@
 using Boxey.Core.Components;
+using Boxey.Core.Editor;
 using Boxey.Core.Static;
-using Sirenix.OdinInspector;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace Boxey.Core {
     public class Terraformer : MonoBehaviour {
-        private PlanetCreator m_target;
-        private PlanetList m_list;
-        private bool m_terraforming;
+        private PlanetCreator _target;
+        private PlanetList _list;
+        private bool _terraforming;
         public void SetList() {
-            planets = m_list.GetPlanets();
+            planets = _list.GetPlanets();
         }
 
-        [Title("Terraforming", titleAlignment: TitleAlignments.Centered)] 
+        [Header("Terraforming")] 
+        [Line (1.5f, .5f,.5f,.5f)]
         [SerializeField] private bool doTerraform = true;
-        [ShowIf("@doTerraform")]
+        [ShowIf("doTerraform")]
         [SerializeField] private Transform point;
-        [ShowIf("@doTerraform")]
+        [ShowIf("doTerraform")]
         [SerializeField, Range(1,5)] private int updateRange = 1;
-        [ShowIf("@doTerraform")]
-        [SerializeField, PropertyRange(.25f, 10)] private float brushRadius = 2.5f;
-        [ShowIf("@doTerraform")]
+        [ShowIf("doTerraform")]
+        [SerializeField, Range(.25f, 10)] private float brushRadius = 2.5f;
+        [ShowIf("doTerraform")]
         [SerializeField,Range(0.01f, 15f)] private float brushSpeed = 5;
 
-        [Title("Planets", titleAlignment: TitleAlignments.Centered)] 
+        [Header("Planets")] 
+        [Line (1.5f, .5f,.5f,.5f)]
         [SerializeField] private PlanetCreator[] planets;
 
         private void Awake() {
-            TryGetComponent(out m_list);
+            TryGetComponent(out _list);
         }
         private void Update() {
             if (planets.Length == 0) return;
@@ -37,27 +39,27 @@ namespace Boxey.Core {
                 point.position = hit.point;
                 if (hit.transform.name == "Sun") return;
                 if (!doTerraform && hit.transform.gameObject.layer != 3) return;
-                m_target = hit.transform.parent.GetComponentInParent<PlanetCreator>();
-                if (m_target == null) return;
-                point.SetParent(m_target.transform);
+                _target = hit.transform.parent.GetComponentInParent<PlanetCreator>();
+                if (_target == null) return;
+                point.SetParent(_target.transform);
                 var numbers = hit.transform.name.Split(",");
                 var currentChunk = new Vector3Int(int.Parse(numbers[0]), int.Parse(numbers[1]), int.Parse(numbers[2]));
-                float3 terraformPoint = (point.localPosition + -m_target.chunkOffset);
+                float3 terraformPoint = (point.localPosition + -_target.chunkOffset);
                 if (Input.GetKey(KeyCode.Mouse0)) {
-                    m_terraforming = true;
-                    m_target.Terrafrom(currentChunk, terraformPoint, updateRange, brushRadius, brushSpeed, true);
+                    _terraforming = true;
+                    _target.Terrafrom(currentChunk, terraformPoint, updateRange, brushRadius, brushSpeed, true);
                 }
                 else if (Input.GetKey(KeyCode.Mouse1)) {
-                    m_terraforming = true;
-                    m_target.Terrafrom(currentChunk, terraformPoint, updateRange, brushRadius, brushSpeed, false);
+                    _terraforming = true;
+                    _target.Terrafrom(currentChunk, terraformPoint, updateRange, brushRadius, brushSpeed, false);
                 }
-                if (Input.GetKeyUp(KeyCode.Mouse0) && m_terraforming) {
-                    m_terraforming = false;
-                    m_target.FinishTerraform();
+                if (Input.GetKeyUp(KeyCode.Mouse0) && _terraforming) {
+                    _terraforming = false;
+                    _target.FinishTerraform();
                 }
                 else if (Input.GetKeyUp(KeyCode.Mouse1)) {
-                    m_terraforming = false;
-                    m_target.FinishTerraform();
+                    _terraforming = false;
+                    _target.FinishTerraform();
                 }
             }
         }
