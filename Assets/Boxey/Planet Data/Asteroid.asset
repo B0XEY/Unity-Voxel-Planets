@@ -19,16 +19,16 @@ MonoBehaviour:
   noiseLayers:
   - type: 0
     useLastLayerAsMask: 0
-    scale: 0.35
+    scale: 0.4
     layerPower: 1
     gain: 0.5
     strength: 1
-    octaves: 4
+    octaves: 3
     lacunarity: 3.66
-    amplitude: 5.51
-    frequency: 0.93
-    persistence: 0.27
-    offset: {x: 0, y: 0, z: 0}
+    amplitude: 0.46
+    frequency: 0.804
+    persistence: 0.15
+    offset: {x: 0, y: 50, z: 0}
   groundHighlightsStrength: 0.284
   ground: {r: 0.14150941, g: 0.13745674, b: 0.13016196, a: 1}
   groundHighlight: {r: 0.3962264, g: 0.3931114, b: 0.38688144, a: 1}

@@ -7,23 +7,27 @@ using Unity.Mathematics;
 using UnityEngine;
 
 namespace Boxey.Core.Static {
-    public static class VoxelNoise {
+    public static class VoxelNoise{
+        private static Perlin3D _noise;
+        public static void SetNoises(){
+            _noise = new Perlin3D();
+        }
+        
         //3D Noise Functions
-        private static float[,,] Get3DNoiseMap(int size, int layerToMake, PlanetSettings settings) {
+        private static float[,,] Get3DNoiseMap(int size, float3 offset, int layerToMake, PlanetSettings settings){
             var octaves = settings.noiseLayers[layerToMake].octaves;
             var lacunarity = settings.noiseLayers[layerToMake].lacunarity;
             var gain = settings.noiseLayers[layerToMake].gain;
             var strength = settings.noiseLayers[layerToMake].strength;
-            var noise = new Perlin3D();
             var noiseBillow = new FractalBillow<Value3D>(octaves, lacunarity, gain, strength);
             var noiseRigid = new FractalRiged<ValueCubic3D>(octaves, lacunarity, gain, strength);
-            float[,,] map3D = new float[size + 1, size + 1, size + 1];
-            for (int x = 0; x <= size; x++) {
-                for (int y = 0; y <= size; y++) {
-                    for (int z = 0; z <= size; z++) {
-                        float sampleX = (x / (45 * settings.noiseLayers[layerToMake].scale)) + settings.noiseLayers[layerToMake].offset.x;
-                        float sampleY = (y / (45 * settings.noiseLayers[layerToMake].scale)) + settings.noiseLayers[layerToMake].offset.y;
-                        float sampleZ = (z / (45 * settings.noiseLayers[layerToMake].scale)) + settings.noiseLayers[layerToMake].offset.z;
+            var map3D = new float[size + 1, size + 1, size + 1];
+            for (var x = 0; x <= size; x++) {
+                for (var y = 0; y <= size; y++) {
+                    for (var z = 0; z <= size; z++) {
+                        var sampleX = (x + offset.x) / (45 * settings.noiseLayers[layerToMake].scale) + settings.noiseLayers[layerToMake].offset.x;
+                        var sampleY = (y + offset.y) / (45 * settings.noiseLayers[layerToMake].scale) + settings.noiseLayers[layerToMake].offset.y;
+                        var sampleZ = (z + offset.z) / (45 * settings.noiseLayers[layerToMake].scale) + settings.noiseLayers[layerToMake].offset.z;
                         var value = settings.noiseLayers[layerToMake].amplitude;
                         var frequency = settings.noiseLayers[layerToMake].frequency;
                         var amplitude = settings.noiseLayers[layerToMake].amplitude;
@@ -32,7 +36,7 @@ namespace Boxey.Core.Static {
                                 sampleX *= frequency;
                                 sampleY *= frequency;
                                 sampleZ *= frequency;
-                                value += noise.GetValue(settings.seed, new float3(sampleX, sampleY, sampleZ)) * amplitude;
+                                value += _noise.GetValue(settings.seed, new float3(sampleX, sampleY, sampleZ)) * amplitude;
                                 frequency *= lacunarity;
                                 amplitude *= settings.noiseLayers[layerToMake].persistence;
                             }
@@ -46,19 +50,21 @@ namespace Boxey.Core.Static {
             }
             return map3D;
         }
-        private static float[,,] Get3DNoiseMapJob(int size, int layerToMake, PlanetSettings settings) {
+        private static float[,,] Get3DNoiseMapJob(int size, float3 offset, int layerToMake, PlanetSettings settings) {
+            
             var octaves = settings.noiseLayers[layerToMake].octaves;
             var lacunarity = settings.noiseLayers[layerToMake].lacunarity;
             var gain = settings.noiseLayers[layerToMake].gain;
             var strength = settings.noiseLayers[layerToMake].strength;
-            float[,,] map3D = new float[size + 1, size + 1, size + 1];
-            int noiseTypeToUse = 0;
+            var map3D = new float[size + 1, size + 1, size + 1];
+            var noiseTypeToUse = 0;
             if (settings.noiseLayers[layerToMake].type == NoiseType.Billow) noiseTypeToUse = 1;
             if (settings.noiseLayers[layerToMake].type == NoiseType.Ridged) noiseTypeToUse = 2;
             var values = new NativeArray<float>((size + 1) * (size + 1) * (size + 1), Allocator.TempJob);
             var job = new Get3DNoise {
                 Size = size,
-                Offset = settings.noiseLayers[layerToMake].offset,
+                Offset = offset,
+                NoiseOffset = settings.noiseLayers[layerToMake].offset,
                 Scale = (45 * settings.noiseLayers[layerToMake].scale),
                 Seed = settings.seed,
                 Power = settings.noiseLayers[layerToMake].layerPower,
@@ -69,13 +75,13 @@ namespace Boxey.Core.Static {
                 Octaves = octaves,
                 MapPlanet1D = values,
                 UseNoise = noiseTypeToUse,
-                Noise = new Perlin3D(),
+                Noise = _noise,
                 NoiseBillow = new FractalBillow<Value3D>(octaves, lacunarity, gain, strength),
                 NoiseRigid = new FractalRiged<ValueCubic3D>(octaves, lacunarity, gain, strength)
             };
             var handle = job.Schedule(values.Length , 128);
             handle.Complete();
-            int index = 0;
+            var index = 0;
             for (int x = 0; x <= size; x++) {
                 for (int y = 0; y <= size; y++) {
                     for (int z = 0; z <= size; z++) {
@@ -88,24 +94,24 @@ namespace Boxey.Core.Static {
             return map3D;
         }
         //Planet Noise Functions
-        public static float[,,] GetPlanetNoiseMap(int mapSize, float planetRadius, PlanetSettings settings) {
-            var center = Vector3.one * (mapSize * .5f);
+        public static float[,,] GetPlanetNoiseMap(int mapSize, int planetSize, float3 offset, float planetRadius, PlanetSettings settings) {
+            var center = Vector3.one * (planetSize * .5f);
             var noiseMaps = new List<float[,,]>(settings.noiseLayers.Length - 1);
             if (settings.useNoiseMap && settings.noiseLayers.Length > 0) {
                 for (int i = 0; i < settings.noiseLayers.Length; i++) {
-                    noiseMaps.Add(Get3DNoiseMap(mapSize, i, settings));
+                    noiseMaps.Add(Get3DNoiseMap(mapSize, offset, i, settings));
                 }
             }
             float[,,] mapPlanet = new float[mapSize + 1, mapSize + 1, mapSize + 1];
-            var maskValue = 0f;
             for (int x = 0; x <= mapSize; x++) {
                 for (int y = 0; y <= mapSize; y++) {
                     for (int z = 0; z <= mapSize; z++) {
-                        var position = new Vector3(x, y, z);
+                        var position = new Vector3(x + offset.x, y + offset.y, z + offset.z);
                         var distanceFromCenter = Vector3.Distance(position, center);
-                        var distanceValue = (1 - ((distanceFromCenter + 15) - planetRadius));
+                        var distanceValue = (1 - (distanceFromCenter / planetRadius));
                         mapPlanet[x, y, z] = distanceValue;
                         for (int i = 0; i < noiseMaps.Count; i++) {
+                            var maskValue = 0f;
                             if (i > 0 && settings.noiseLayers[i].useLastLayerAsMask) maskValue = noiseMaps[i - 1][x, y, z];
                             mapPlanet[x, y, z] += noiseMaps[i][x,y,z] - maskValue;
                         }
@@ -115,19 +121,20 @@ namespace Boxey.Core.Static {
             
             return mapPlanet;
         }
-        public static float[,,] GetPlanetNoiseMapJob(int mapSize, float planetRadius, PlanetSettings settings) {
+        public static float[,,] GetPlanetNoiseMapJob(int mapSize, int planetSize, float3 offset, float planetRadius, PlanetSettings settings) {
             var map3D = new float[mapSize + 1, mapSize + 1, mapSize + 1];
             var noiseMaps = new List<float[,,]>(settings.noiseLayers.Length - 1);
             if (settings.useNoiseMap && settings.noiseLayers.Length > 0) {
                 for (int i = 0; i < settings.noiseLayers.Length; i++) {
-                    noiseMaps.Add(Get3DNoiseMapJob(mapSize, i, settings));
+                    noiseMaps.Add(Get3DNoiseMapJob(mapSize, offset, i, settings));
                 }
             }
             var values = new NativeArray<float>((mapSize + 1) * (mapSize + 1) * (mapSize + 1), Allocator.TempJob);
             var job = new GetPlanetNoise {
                 MapSize = mapSize,
                 Radius = planetRadius,
-                Center = new float3(1, 1, 1) * (mapSize * .5f),
+                Offset = offset,
+                Center = new float3(1, 1, 1) * (planetSize * .5f),
                 MapPlanet1D = values
             };
             var handle = job.Schedule(values.Length, mapSize + 1);
@@ -148,28 +155,6 @@ namespace Boxey.Core.Static {
             }
             values.Dispose();
             return map3D;
-        }
-        //Colors
-        public static Color[] GetLayerColors3DPlanet(float[,,] map, int layer, Gradient mapColors, out float min, out float max, bool isPlanet) {
-            max = float.MinValue; min = float.MaxValue;
-            int sizeX = map.GetLength(0);
-            int sizeZ = map.GetLength(1);
-            Color[] colors = new Color[sizeX * sizeZ];
-            for (int width = 0; width < sizeX; width++) {
-                for (int height = 0; height < sizeZ; height++) {
-                    var value = map[width, height, layer];
-                    if (value > max) max = value;
-                    if (value < min) min = value;
-                    colors[height * sizeX + width] = isPlanet ? Color.red: mapColors.Evaluate(value);
-                }
-            }
-            for (int width = 0; width < sizeX; width++) {
-                for (int height = 0; height < sizeZ; height++) {
-                    colors[height * sizeX + width] = mapColors.Evaluate(Mathf.InverseLerp(min, max, map[width, height, layer]));
-                    if (isPlanet && map[width, height, layer] >= -.75f && map[width, height, layer] <= .75f) colors[height * sizeX + width] = Color.red;
-                }
-            }
-            return colors;
         }
         //Terraforming
         public static void Terraform(ref float[,,] map, int size, bool addTerrain, float brushRadius, float brushSpeed, float3 centerPoint) {
@@ -210,6 +195,7 @@ namespace Boxey.Core.Static {
         private struct Get3DNoise : IJobParallelFor {
             [ReadOnly] public int Size;
             [ReadOnly] public float3 Offset;
+            [ReadOnly] public float3 NoiseOffset;
             [ReadOnly] public float Scale;
             [ReadOnly] public int Seed;
             [ReadOnly] public float Power;
@@ -223,15 +209,16 @@ namespace Boxey.Core.Static {
             [ReadOnly] public Perlin3D Noise;
             [ReadOnly] public FractalBillow<Value3D> NoiseBillow;
             [ReadOnly] public FractalRiged<ValueCubic3D> NoiseRigid;
+            
             public NativeArray<float> MapPlanet1D;
 
             public void Execute(int index) {
                 int z = index % (Size + 1);
-                int y = (index / (Size + 1)) % (Size + 1);
+                int y = index / (Size + 1) % (Size + 1);
                 int x = index / ((Size + 1) * (Size + 1));
-                float sampleX = (x / Scale) + Offset.x;
-                float sampleY = (y / Scale) + Offset.y;
-                float sampleZ = (z / Scale) + Offset.z;
+                float sampleX = (x + Offset.x) / Scale + NoiseOffset.x;
+                float sampleY = (y + Offset.y) / Scale + NoiseOffset.y;
+                float sampleZ = (z + Offset.z) / Scale + NoiseOffset.z;
                 var value = Amplitude;
                 var frequency = Frequency;
                 var amplitude = Amplitude;
@@ -255,6 +242,7 @@ namespace Boxey.Core.Static {
         private struct GetPlanetNoise : IJobParallelFor {
             [ReadOnly] public int MapSize;
             [ReadOnly] public float Radius;
+            [ReadOnly] public float3 Offset;
             [ReadOnly] public float3 Center;
             public NativeArray<float> MapPlanet1D;
 
@@ -262,9 +250,9 @@ namespace Boxey.Core.Static {
                 int z = index % (MapSize + 1);
                 int y = (index / (MapSize + 1)) % (MapSize + 1);
                 int x = index / ((MapSize + 1) * (MapSize + 1));
-                var position = new float3(x, y, z);
+                var position = new float3(x + Offset.x, y + Offset.y, z + Offset.z);
                 var distanceFromCenter = math.distance(position, Center);
-                float distanceValue = 1 - ((distanceFromCenter + 15) - Radius);
+                float distanceValue = 1 - (distanceFromCenter / Radius);
                 MapPlanet1D[index] = distanceValue;
             }
         }

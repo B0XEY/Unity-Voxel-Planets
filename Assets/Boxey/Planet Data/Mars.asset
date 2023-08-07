@@ -15,7 +15,7 @@ MonoBehaviour:
   groundToughness: 0.01
   useNoiseMap: 1
   seed: -981704
-  randomSeed: 0
+  randomSeed: 1
   noiseLayers:
   - type: 0
     useLastLayerAsMask: 0
@@ -25,7 +25,7 @@ MonoBehaviour:
     strength: 1
     octaves: 3
     lacunarity: 3.66
-    amplitude: 13.61
+    amplitude: 0.29
     frequency: 0.804
     persistence: 0.15
     offset: {x: 0, y: 0, z: 0}
@@ -34,10 +34,10 @@ MonoBehaviour:
     scale: 0.47
     layerPower: 0.2
     gain: 0.5
-    strength: 2
+    strength: 1
     octaves: 2
     lacunarity: 3.66
-    amplitude: 10
+    amplitude: 0.12
     frequency: 0.804
     persistence: 0.15
     offset: {x: 0, y: 0, z: 0}
@@ -61,3 +61,9 @@ MonoBehaviour:
   foamStrength: 2
   foamCutoff: 2
   foamSpeed: 0.1
+  hasAtmosphere: 1
+  cloudColor: {r: 1, g: 1, b: 1, a: 1}
+  cloudSize: 0.02
+  cloudSoftness: 0.221
+  cloudiness: 0.43
+  cloudSpeed: 1

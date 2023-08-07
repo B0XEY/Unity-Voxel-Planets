@@ -7,74 +7,69 @@ using UnityEngine;
 
 namespace Boxey.Core {
     public class Chunk {
-        public readonly GameObject ChunkObject;
+        public GameObject GetChunkObj { get; }
+        public bool MeshGenerated { get; private set; }
+
         public bool TerraformingChunk;
-        public bool ChunkMeshGenerated;
 
-        private readonly Dictionary<Vector3, int> m_verticesDictionary;
-        private readonly List<Vector3> m_verticesList;
-        private readonly List<int> m_triangles;
-        private float[,,] m_noiseMap;
+        private readonly Dictionary<Vector3, int> _verticesDictionary;
+        private readonly List<Vector3> _verticesList;
+        private readonly List<int> _triangles;
+        private float[,,] _noiseMap;
 
-        private readonly Camera m_camera;
-        private readonly int m_size;
-        private readonly float m_valueGate;
-        private readonly float m_createGate;
-        private readonly bool m_doSmoothing;
-        private readonly bool m_doFlatShading;
+        private readonly Camera _camera;
+        private readonly int _size;
+        private readonly float _valueGate;
+        private readonly float _createGate;
+        private readonly bool _doSmoothing;
+        private readonly bool _doFlatShading;
         
-        private Material m_mat;
+        private Material _mat;
         
-        private readonly LodData m_lodData;
-        private readonly Mesh m_chunkMesh;
-        private readonly MeshFilter m_chunkFilter;
-        private readonly MeshRenderer m_chunkRenderer;
-        private readonly MeshCollider m_chunkCollider;
+        private readonly LodData _lodData;
+        private readonly Mesh _chunkMesh;
+        private readonly MeshFilter _chunkFilter;
+        private readonly MeshRenderer _chunkRenderer;
+        private readonly MeshCollider _chunkCollider;
 
-        public Chunk(float[,,] noiseMap, Vector3Int position, Vector3 offset, int chunkSize, float valueGate, float createGate, bool doSmoothing, bool flatShading, LodData lod, Material mat) {
-            ChunkMeshGenerated = false;
-            m_noiseMap = new float[chunkSize + 1, chunkSize + 1, chunkSize + 1];
-            m_size = chunkSize;
-            m_valueGate = valueGate;
-            m_createGate = createGate;
-            m_doSmoothing = doSmoothing;
-            m_doFlatShading = flatShading;
-            m_lodData = lod;
-            m_mat = mat;
-            for (int x = 0; x <= m_size; x++) {
-                for (int y = 0; y <= m_size; y++) {
-                    for (int z = 0; z <= m_size; z++) {
-                        m_noiseMap[x, y, z] = noiseMap[(x + position.x), (y + position.y), (z + position.z)];
-                    }
-                }
-            }
-            if (m_doFlatShading) m_verticesList = new List<Vector3>();
-            else m_verticesDictionary = new Dictionary<Vector3, int>();
-            m_triangles = new List<int>();
-            m_camera = Helpers.GetCamera;
+        public Chunk(Vector3Int position, Vector3 offset,  int chunkSize, PlanetCreator.ChunkData data) {
+            MeshGenerated = false;
+            _size = chunkSize;
+            _valueGate = data.value;
+            _createGate = data.create;
+            _doSmoothing = data.smooth;
+            _doFlatShading = data.flat;
+            _lodData = data.lod;
+            _mat = data.mat;
+            if (!Application.isPlaying) _noiseMap = VoxelNoise.GetPlanetNoiseMap(chunkSize, data.size, position.ToFloat3(), data.radius, data.settings);
+            else _noiseMap = VoxelNoise.GetPlanetNoiseMapJob(chunkSize, data.size, position.ToFloat3(), data.radius, data.settings);
+            if (_doFlatShading) _verticesList = new List<Vector3>();
+            else _verticesDictionary = new Dictionary<Vector3, int>();
+            _triangles = new List<int>();
+            _camera = Helpers.GetCamera;
             
-            ChunkObject = new GameObject {
+            GetChunkObj = new GameObject {
                 transform = {
                     position = position + offset,
                     localScale = Vector3.one
                 },
                 name = $"{position.x},{position.y},{position.z}"
             };
-            m_chunkMesh = new Mesh {
+            _chunkMesh = new Mesh {
                 name = "LOD - 0"
             };
-            m_chunkFilter = ChunkObject.AddComponent<MeshFilter>();
-            m_chunkRenderer = ChunkObject.AddComponent<MeshRenderer>();
-            m_chunkCollider = ChunkObject.AddComponent<MeshCollider>();
+            _chunkFilter = GetChunkObj.AddComponent<MeshFilter>();
+            _chunkRenderer = GetChunkObj.AddComponent<MeshRenderer>();
+            _chunkCollider = GetChunkObj.AddComponent<MeshCollider>();
             Generate();
         }
 
         private void Generate() {
             ClearMeshData();
-            for (int x = 0; x < m_size; x++) {
-                for (int y = 0; y < m_size; y++) {
-                    for (int z = 0; z < m_size; z++) {
-                        if (m_noiseMap[x, y, z] < -m_createGate || m_noiseMap[x, y, z] > m_createGate) continue;
+            for (int x = 0; x < _size; x++) {
+                for (int y = 0; y < _size; y++) {
+                    for (int z = 0; z < _size; z++) {
+                        if (_noiseMap[x, y, z] < -_createGate || _noiseMap[x, y, z] > _createGate) continue;
                         CreateCube(new int3(x, y, z));
                     }
                 }
@@ -84,7 +79,7 @@ namespace Boxey.Core {
         private int GetCubeConfig(float[] cube) {
             var configIndex = 0;
             for (int i = 0; i < 8; i++) {
-                if (cube[i] < m_valueGate) configIndex |= 1 << i;
+                if (cube[i] < _valueGate) configIndex |= 1 << i;
             }
 
             return configIndex;
@@ -108,21 +103,21 @@ namespace Boxey.Core {
                     float3 vert1 = position + VoxelTables.CornerTable[edge1];
                     float3 vert2 = position + VoxelTables.CornerTable[edge2];
                     float3 vertPosition;
-                    if (m_doSmoothing) {
+                    if (_doSmoothing) {
                         float vert1Sample = cube[edge1];
                         float vert2Sample = cube[edge2];
                         float difference = vert2Sample - vert1Sample;
-                        if (difference == 0) difference = m_valueGate;
-                        else difference = (m_valueGate - vert1Sample) / difference;
+                        if (difference == 0) difference = _valueGate;
+                        else difference = (_valueGate - vert1Sample) / difference;
                         vertPosition = vert1 + ((vert2 - vert1) * difference);
                     }else {
                         vertPosition = (vert1 + vert2) * .5f;
                     }
-                    if (m_doFlatShading) {
-                        m_verticesList.Add(vertPosition);
-                        m_triangles.Add(m_verticesList.Count - 1);
+                    if (_doFlatShading) {
+                        _verticesList.Add(vertPosition);
+                        _triangles.Add(_verticesList.Count - 1);
                     }else {
-                        m_triangles.Add(VertForIndice(vertPosition));
+                        _triangles.Add(VertForIndice(vertPosition));
                     }
                     edgeIndex++;
                 }
@@ -130,74 +125,74 @@ namespace Boxey.Core {
         }
        
         private float SampleMap(int3 point) {
-            return m_noiseMap[point.x, point.y, point.z];
+            return _noiseMap[point.x, point.y, point.z];
         }
         private int VertForIndice(Vector3 vert) {
-            if (m_verticesDictionary.TryGetValue(vert, out int index)) {
+            if (_verticesDictionary.TryGetValue(vert, out int index)) {
                 return index;
             }
-            int newIndex = m_verticesDictionary.Count;
-            m_verticesDictionary.Add(vert, newIndex);
+            int newIndex = _verticesDictionary.Count;
+            _verticesDictionary.Add(vert, newIndex);
             return newIndex;
         }
 
         #region Chunk Commands
         public void UpdateMaterial(Material newMat) {
-            m_chunkRenderer.sharedMaterial = newMat;
-            m_mat = newMat;
+            _chunkRenderer.sharedMaterial = newMat;
+            _mat = newMat;
         }
-        public float[,,] GetChunkMap() => m_noiseMap;
+        public float[,,] GetChunkMap() => _noiseMap;
         public void UpdateChunk(float[,,] newMap) {
-            m_noiseMap = newMap;
+            _noiseMap = newMap;
             Generate();
         }
         public void Update() {
-            if (!ChunkMeshGenerated) return;
-            var distance = Vector3.Distance(ChunkObject.transform.position, m_camera.transform.position);
-            var toggle = distance <= m_lodData.viewDistance;
-            ChunkObject.SetActive(toggle);
-            m_chunkCollider.enabled = toggle;
+            if (!MeshGenerated) return;
+            var distance = Vector3.Distance(GetChunkObj.transform.position, _camera.transform.position);
+            var toggle = distance <= _lodData.viewDistance;
+            GetChunkObj.SetActive(toggle);
+            _chunkCollider.enabled = toggle;
         }
         #endregion
 
         #region Mesh Functions
 
         public MeshFilter GetFilter() {
-            return ChunkMeshGenerated ? m_chunkFilter : null;
+            return MeshGenerated ? _chunkFilter : null;
         }
         private void BuildMesh() {
-            ChunkMeshGenerated = false;
-            ChunkObject.SetActive(ChunkMeshGenerated);
-            if (m_doFlatShading ? m_verticesList.Count == 0 : m_verticesDictionary.Count == 0) {
+            MeshGenerated = false;
+            GetChunkObj.SetActive(MeshGenerated);
+            if (_doFlatShading ? _verticesList.Count == 0 : _verticesDictionary.Count == 0) {
                 return;
             }
-            m_chunkMesh.Clear();
-            if (m_doFlatShading) {
-                m_chunkMesh.vertices = m_verticesList.Select(vert => new Vector3(vert.x, vert.y, vert.z)).ToArray();
+            _chunkMesh.Clear();
+            if (_doFlatShading) {
+                _chunkMesh.vertices = _verticesList.Select(vert => new Vector3(vert.x, vert.y, vert.z)).ToArray();
             }else {
-                m_chunkMesh.vertices = m_verticesDictionary.Select(vert => new Vector3(vert.Key.x, vert.Key.y, vert.Key.z)).ToArray();
+                _chunkMesh.vertices = _verticesDictionary.Select(vert => new Vector3(vert.Key.x, vert.Key.y, vert.Key.z)).ToArray();
             }
-            m_chunkMesh.triangles = m_triangles.ToArray();
-            m_chunkMesh.normals = CalculateNormals(m_doFlatShading ? m_verticesList : m_verticesDictionary);
-            m_chunkCollider.sharedMesh = m_chunkMesh;
-            m_chunkFilter.sharedMesh = m_chunkMesh;
-            m_chunkRenderer.sharedMaterial = m_mat;
-            ChunkMeshGenerated = true;
-            ChunkObject.SetActive(ChunkMeshGenerated);
+            _chunkMesh.triangles = _triangles.ToArray();
+            _chunkMesh.normals = CalculateNormals(_doFlatShading ? _verticesList : _verticesDictionary);
+            _chunkCollider.sharedMesh = _chunkMesh;
+            _chunkFilter.sharedMesh = _chunkMesh;
+            _chunkRenderer.sharedMaterial = _mat;
+            MeshGenerated = true;
+            GetChunkObj.SetActive(MeshGenerated);
         }
         private void ClearMeshData() {
-            if (m_doFlatShading) m_verticesList.Clear();
-            else m_verticesDictionary.Clear();
-            m_triangles.Clear();
+            if (_doFlatShading) _verticesList.Clear();
+            else _verticesDictionary.Clear();
+            _triangles.Clear();
         }
         private Vector3[] CalculateNormals(ICollection verts) {
             Vector3[] vertexNormals = new Vector3[verts.Count];
-            int triangleCont = m_triangles.Count / 3;
+            int triangleCont = _triangles.Count / 3;
             for (int i = 0; i < triangleCont; i++) {
                 int normalTriangleIndex = i * 3;
-                int vertexIndexA = m_triangles[normalTriangleIndex];
-                int vertexIndexB = m_triangles[normalTriangleIndex + 1];
-                int vertexIndexC = m_triangles[normalTriangleIndex + 2];
+                int vertexIndexA = _triangles[normalTriangleIndex];
+                int vertexIndexB = _triangles[normalTriangleIndex + 1];
+                int vertexIndexC = _triangles[normalTriangleIndex + 2];
 
                 Vector3 triangleNormal = SurfaceNormal(vertexIndexA, vertexIndexB, vertexIndexC);
                 vertexNormals[vertexIndexA] += triangleNormal;
@@ -212,9 +207,9 @@ namespace Boxey.Core {
             return vertexNormals;
         }
         private Vector3 SurfaceNormal(int indexA, int indexB, int indexC) {
-            Vector3 pointA = m_doFlatShading ? m_verticesList[indexA] : m_verticesDictionary.ElementAt(indexA).Key;
-            Vector3 pointB = m_doFlatShading ? m_verticesList[indexB] : m_verticesDictionary.ElementAt(indexB).Key;
-            Vector3 pointC = m_doFlatShading ? m_verticesList[indexC] : m_verticesDictionary.ElementAt(indexC).Key;
+            Vector3 pointA = _doFlatShading ? _verticesList[indexA] : _verticesDictionary.ElementAt(indexA).Key;
+            Vector3 pointB = _doFlatShading ? _verticesList[indexB] : _verticesDictionary.ElementAt(indexB).Key;
+            Vector3 pointC = _doFlatShading ? _verticesList[indexC] : _verticesDictionary.ElementAt(indexC).Key;
 
             var sideAb = pointB - pointA;
             var sideAc = pointC - pointA;

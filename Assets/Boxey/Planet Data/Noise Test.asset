@@ -14,20 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundToughness: 0.01
   useNoiseMap: 1
-  seed: -819053
-  randomSeed: 1
+  seed: -354452
+  randomSeed: 0
   noiseLayers:
   - type: 0
     useLastLayerAsMask: 0
-    scale: 0.35
+    scale: 0.25
     layerPower: 1
     gain: 0.5
     strength: 1
-    octaves: 3
-    lacunarity: 3.66
-    amplitude: 11.13
+    octaves: 2
+    lacunarity: 2.42
+    amplitude: 0.32
     frequency: 0.804
-    persistence: 0.15
+    persistence: 0.29
     offset: {x: 0, y: 0, z: 0}
   groundHighlightsStrength: 0.6
   ground: {r: 0.08627451, g: 0.7254902, b: 0.32941177, a: 1}
@@ -49,3 +49,9 @@ MonoBehaviour:
   foamStrength: 1.107
   foamCutoff: 1
   foamSpeed: 0.05
+  hasAtmosphere: 1
+  cloudColor: {r: 1, g: 1, b: 1, a: 1}
+  cloudSize: 0.02
+  cloudSoftness: 0.221
+  cloudiness: 0.43
+  cloudSpeed: 1

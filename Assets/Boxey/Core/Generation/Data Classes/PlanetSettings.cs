@@ -9,8 +9,8 @@ namespace Boxey.Core {
         public void RandomSeed() => seed = Random.Range(-999999, 999999);
         private void RandomSeedToggle() => randomSeed = !randomSeed;
         //Terraforming
-        [Title("Terraform Settings", TitleAlignment = TitleAlignments.Centered)]
-        [TabGroup("Basic")] [Range(0.01f, 10f)] public float groundToughness = 1;
+        [Title("Terraform Settings", TitleAlignment = TitleAlignments.Centered)] 
+        [TabGroup("Basic")] [Range(0.01f, 10f)]public float groundToughness = 1f;
         //Noise
         [Title("Noise Settings", TitleAlignment = TitleAlignments.Centered)]
         [TabGroup("Basic")] public bool useNoiseMap;
@@ -23,24 +23,24 @@ namespace Boxey.Core {
         //Colors
         [Title("Ground Settings", titleAlignment: TitleAlignments.Centered)]
         [TabGroup("Planet")] [Range(0f, 1.5f)] public float groundHighlightsStrength = .6f;
-        [TabGroup("Planet")] public Color ground = new Color(22/255f, 185/255f, 84/255f, 1);
-        [TabGroup("Planet")] public Color groundHighlight = new Color(22/255f, 171/255f, 28/255f, 1);
+        [TabGroup("Planet")] public Color ground = new (22/255f, 185/255f, 84/255f, 1);
+        [TabGroup("Planet")] public Color groundHighlight = new (22/255f, 171/255f, 28/255f, 1);
         
         [Title("Sand Settings", titleAlignment: TitleAlignments.Centered)]
         [TabGroup("Planet")] [Range(0f, 1.5f)] public float sandHighlightsStrength = .653f;
         [TabGroup("Planet")] public float sandHeight = 49.4f;
-        [TabGroup("Planet")] public Color sand = new Color(255/255f, 244/255f, 136/255f, 1);
-        [TabGroup("Planet")] public Color sandHighlights = new Color(209/255f, 181/255f, 102/255f, 1);
+        [TabGroup("Planet")] public Color sand = new (255/255f, 244/255f, 136/255f, 1);
+        [TabGroup("Planet")] public Color sandHighlights = new (209/255f, 181/255f, 102/255f, 1);
 
         [Title("Rock Settings", titleAlignment: TitleAlignments.Centered)] 
         [TabGroup("Planet")] [Range(0f, 1.5f)] public float rockHighlightsStrength = .172f;
         [TabGroup("Planet")] [Range(0f, 1f)] public float rockThreshold = .823f;
-        [TabGroup("Planet")] public Color rock = new Color(106/255f, 80/255f, 66/255f , 1);
-        [TabGroup("Planet")] public Color rockHighlights = new Color(26/255f, 21/255f, 17/255f, 1);
+        [TabGroup("Planet")] public Color rock = new (106/255f, 80/255f, 66/255f , 1);
+        [TabGroup("Planet")] public Color rockHighlights = new (26/255f, 21/255f, 17/255f, 1);
         //Water
         [Title("Water Settings", titleAlignment: TitleAlignments.Centered)]
-        [TabGroup("Water")] public Color shallowColor = new Color(71/255f, 123/255f, 255/255f, 150/255f);
-        [TabGroup("Water")] public Color deepColor = new Color(10/255f, 117/255f, 236/255f, 235/255f);
+        [TabGroup("Water")] public Color shallowColor = new (71/255f, 123/255f, 255/255f, 150/255f);
+        [TabGroup("Water")] public Color deepColor = new (10/255f, 117/255f, 236/255f, 235/255f);
         [TabGroup("Water")] public float deepFadeDistance = -2.13f;
         [TabGroup("Water")] [Range(0f, 2f)] public float depthStrength = .247f;
         
