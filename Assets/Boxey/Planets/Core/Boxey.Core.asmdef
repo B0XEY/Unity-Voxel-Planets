@@ -1,0 +1,21 @@
+{
+    "name": "Boxey.Core",
+    "rootNamespace": "",
+    "references": [
+        "GUID:2665a8d13d1b3f18800f46e256720795",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:3d8ba73b29fa56e49947fe799a0d74ef",
+        "GUID:77ccaf49895b0d64e87cd4b4faf83c49",
+        "GUID:14cd057649597394bb02956382253df6",
+        "GUID:9d430e250e89ef74aba8c0a4f89a7fd9"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

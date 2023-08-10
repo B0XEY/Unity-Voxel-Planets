@@ -1,0 +1,235 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be9650a198534dc791ecd5960155e22d, type: 3}
+  m_Name: Alien
+  m_EditorClassIdentifier: 
+  groundToughness: 2.65
+  useNoiseMap: 1
+  seed: 253287
+  noiseLayers:
+  - type: 0
+    useLastLayerAsMask: 0
+    removeLayer: 0
+    scale: 0.4
+    mapHeightCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -2.4869385
+        value: -0.058624268
+        inSlope: -0.059023753
+        outSlope: -0.059023753
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.09564515
+      - serializedVersion: 3
+        time: -0.5472646
+        value: -0.026157947
+        inSlope: 0.034204353
+        outSlope: 0.034204353
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.048693363
+      - serializedVersion: 3
+        time: 0.43113524
+        value: 0.008147333
+        inSlope: 0.040399995
+        outSlope: 0.040399995
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.2097025
+        value: 0.065152645
+        inSlope: 0.025712717
+        outSlope: 0.025712717
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.19014889
+      - serializedVersion: 3
+        time: 1.7197462
+        value: 0.04420555
+        inSlope: -0.023136143
+        outSlope: -0.023136143
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 2.0321755
+        value: 0.040510356
+        inSlope: -0.011827296
+        outSlope: -0.011827296
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    layerPower: 0.8
+    gain: 0.5
+    strength: 1
+    octaves: 2
+    lacunarity: 3.66
+    amplitude: 1.72
+    frequency: 0.804
+    persistence: 0.15
+    offset: {x: 0, y: 0, z: 0}
+  - type: 0
+    useLastLayerAsMask: 0
+    removeLayer: 1
+    scale: 3
+    mapHeightCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -2.6457639
+        value: 0.55841804
+        inSlope: -0.038364775
+        outSlope: -0.038364775
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.5854869
+      - serializedVersion: 3
+        time: -2.1822014
+        value: 0.006599156
+        inSlope: 0.010864359
+        outSlope: 0.010864359
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.15519553
+      - serializedVersion: 3
+        time: -1.2590785
+        value: 0.13422081
+        inSlope: -0.31365097
+        outSlope: -0.31365097
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.13436064
+      - serializedVersion: 3
+        time: -0.23395438
+        value: 0.24522257
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.1365109
+        value: 0.33432397
+        inSlope: 0.18339796
+        outSlope: 0.18339796
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.10746207
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.36729217
+        value: 0.5784445
+        inSlope: -0.35459659
+        outSlope: -0.35459659
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.48392448
+        value: 0.43252957
+        inSlope: 0.9087562
+        outSlope: 0.9087562
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.770104
+        value: 0.53070295
+        inSlope: -0.063767835
+        outSlope: -0.063767835
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.1480629
+      - serializedVersion: 3
+        time: 1.0406129
+        value: 0.656786
+        inSlope: 0.14287499
+        outSlope: 0.14287499
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.18363823
+        outWeight: 0.06864455
+      - serializedVersion: 3
+        time: 1.3101444
+        value: -0.022801667
+        inSlope: -0.005537436
+        outSlope: -0.005537436
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.7785969
+        value: 0.68329954
+        inSlope: -0.011583851
+        outSlope: -0.011583851
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.08603322
+        outWeight: 0.33333334
+      m_PreInfinity: 0
+      m_PostInfinity: 0
+      m_RotationOrder: 4
+    layerPower: 0.56
+    gain: 0.5
+    strength: 1
+    octaves: 2
+    lacunarity: 3.66
+    amplitude: 1.88
+    frequency: 0.804
+    persistence: 0.15
+    offset: {x: 0, y: 0, z: 0}
+  groundHighlightsStrength: 0.364
+  ground: {r: 0.72156864, g: 0.07450981, b: 0.39607844, a: 1}
+  groundHighlight: {r: 0.41568628, g: 0.003921569, b: 0.21176471, a: 1}
+  sandHighlightsStrength: 0.687
+  sandHeight: 0
+  sand: {r: 0.7490196, g: 0.67058825, b: 0.14509805, a: 1}
+  sandHighlights: {r: 0.5372549, g: 0.4862745, b: 0.15294118, a: 1}
+  rockHighlightsStrength: 0.172
+  rockThreshold: 0.823
+  rock: {r: 0.007843138, g: 0.42352942, b: 0.4862745, a: 1}
+  rockHighlights: {r: 0.02745098, g: 0.2509804, b: 0.28235295, a: 1}
+  shallowColor: {r: 0.53333336, g: 0.81960785, b: 0.5411765, a: 0.5882353}
+  deepColor: {r: 0.35686275, g: 0.58431375, b: 0.36078432, a: 0.92156863}
+  deepFadeDistance: -2.13
+  depthStrength: 0.247
+  foamColor: {r: 1, g: 1, b: 1, a: 1}
+  foamAmount: 0.1
+  foamStrength: 0.581
+  foamCutoff: 1
+  foamSpeed: 0.15
+  hasAtmosphere: 1
+  cloudColor: {r: 1, g: 1, b: 1, a: 1}
+  cloudSize: 0.02
+  cloudSoftness: 0.221
+  cloudiness: 0.43
+  cloudSpeed: 1
