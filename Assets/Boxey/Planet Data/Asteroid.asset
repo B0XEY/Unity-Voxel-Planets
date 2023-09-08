@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be9650a198534dc791ecd5960155e22d, type: 3}
+  m_Name: Asteroid
+  m_EditorClassIdentifier: 
+  groundToughness: 0.01
+  useNoiseMap: 1
+  seed: 468087
+  randomSeed: 1
+  noiseLayers:
+  - type: 0
+    useLastLayerAsMask: 0
+    scale: 0.4
+    layerPower: 1
+    gain: 0.5
+    strength: 1
+    octaves: 3
+    lacunarity: 3.66
+    amplitude: 0.46
+    frequency: 0.804
+    persistence: 0.15
+    offset: {x: 0, y: 50, z: 0}
+  groundHighlightsStrength: 0.284
+  ground: {r: 0.14150941, g: 0.13745674, b: 0.13016196, a: 1}
+  groundHighlight: {r: 0.3962264, g: 0.3931114, b: 0.38688144, a: 1}
+  sandHighlightsStrength: 0.652
+  sandHeight: 0
+  sand: {r: 1, g: 0, b: 0.026395798, a: 1}
+  sandHighlights: {r: 1, g: 0.6666667, b: 0, a: 1}
+  rockHighlightsStrength: 0.111
+  rockThreshold: 0.963
+  rock: {r: 0.13207549, g: 0.13140799, b: 0.1302065, a: 1}
+  rockHighlights: {r: 0.16981131, g: 0.16981131, b: 0.16981131, a: 1}
+  shallowColor: {r: 1, g: 0.2784314, b: 0.3372549, a: 0.5882353}
+  deepColor: {r: 0.62352943, g: 0.17254902, b: 0.20784314, a: 0.92156863}
+  deepFadeDistance: -2.13
+  depthStrength: 1.719
+  foamColor: {r: 1, g: 1, b: 1, a: 0.5686275}
+  foamAmount: 0.16
+  foamStrength: 1.532
+  foamCutoff: 2
+  foamSpeed: 0.1
+  hasAtmosphere: 0
+  cloudColor: {r: 1, g: 1, b: 1, a: 1}
+  cloudSize: 0.02
+  cloudSoftness: 0.221
+  cloudiness: 0.43
+  cloudSpeed: 1
