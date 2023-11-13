@@ -4,10 +4,10 @@
 
 
 # Unity-Voxel-Planets - Unity 2022.3.1f1 - URP
+### VERSION 2 IN PROGRESS. Should make planets bigger with the use of an octree and will have better memory usage!
 ![ezgif com-optimize](https://github.com/B0XEY/Unity-Voxel-Planets/assets/94720404/764d639a-c221-4c43-85b4-63d31b6a2f7c)
 
 ## Make Procedural Unity Voxel Planets with smooth terrain and a dynamic texture via a Shader graph
-## VERSION 2 IN PROGRESS. Should make planets bigger with the use of a octree and will have better memory usage!
 
 ## Features
 - 3D noise function uses jobs / brust in runtime for faster performance. Inspector (not playing) uses normal functions
